@@ -31,7 +31,7 @@ public class Transition {
         return this.input;
     }
 
-    public String getInputAsBinnary(){
+    public String getInputAsBinary(){
         return Long.toBinaryString(this.input);
     }
 
