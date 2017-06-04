@@ -244,7 +244,7 @@ public class StateMachineWriter {
      * @return the state's code as java.String
      */
     public static String getStateCodeFromLong(long code){
-        #// TODO: 04.06.2017 implement method 
+        // TODO: 04.06.2017 implement method
         return "";
     }
 }

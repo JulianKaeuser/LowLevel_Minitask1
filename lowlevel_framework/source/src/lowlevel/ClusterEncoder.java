@@ -29,7 +29,7 @@ public class ClusterEncoder {
         /*
         precondition: states have yet been chosen regarding their clusterability
          */
-
+        return result;
 
 
 
@@ -43,15 +43,7 @@ public class ClusterEncoder {
      */
     public HashMap<State, String> encodeBinary(State[] states, int nIn){
         HashMap<State, String> result = new HashMap<State, String>();
+        return result;
     }
-
-}
-
-
-public class oneHotEncoder extends ClusterEncoder{
-
-}
-
-public class binaryEncoder extends clusterEncoder{
 
 }
