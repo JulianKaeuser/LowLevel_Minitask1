@@ -49,6 +49,7 @@ public class StateMachineWriter {
         }
 
         // some lazy KOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOmment
+        // some other comment
 
         bld.append(".start_kiss");
         bld.append(".i "+fsm.getNumInputs()+"\n");
