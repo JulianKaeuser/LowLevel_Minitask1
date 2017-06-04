@@ -11,6 +11,7 @@ public class Cluster {
 
     private Set<State> states;
     private Set<Transition> transitions;
+    private int clusterStateLatches; // the number of latches needed to store the states in this cluster. depends on encoding (one-hot/binary)
 
     // should be either "binary" or "onehot"
     private String internalEncoding;
@@ -99,5 +100,9 @@ public class Cluster {
 
     public String getCode(){
         return "";
+    }
+
+    public int getClusterStateLatches(){
+        return clusterStateLatches;
     }
 }

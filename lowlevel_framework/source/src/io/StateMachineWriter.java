@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -65,13 +66,19 @@ public class StateMachineWriter {
 
         for (int ii=0; ii<latches.length; ii++){
             bld.append(latches[ii]);
+            /*
+            note: the first n latches are associated with the one-hot cluster encoding,
+            then the next
+             */
         }
         bld.append("\n");
 
         // print codes of states
-        for (Cluster c : fsm.getClusters()){
-            for (State s : c.getStateArray()){
-                bld.append(".code "+s.getName()+" "+c.getCode()+s.getCode()+"\n");
+        for (Cluster cluster : fsm.getClusters()){
+            for (State state : cluster.getStateArray()){
+                int offset = getClusterOffset(latches, cluster);
+                String stateCode = getStateCodeFromLong(state.getCode());
+                bld.append(".code "+state.getName()+" "+cluster.getCode()+getStateCode(offset, latches.length, stateCode) +"\n");
             }
         }
 
@@ -89,6 +96,11 @@ public class StateMachineWriter {
         }
     }
 
+    /**
+     * Builds a string which holds the latch order list
+     * @param fsm the modeled state machine
+     * @return a string which has all latches described
+     */
     private static String[] getLatches(StateMachine fsm){
         String[] latches = null;
         if (fsm==null) {
@@ -97,25 +109,64 @@ public class StateMachineWriter {
             return latches;
         }
 
-
+        int actualNumOfLatches = 0;
+        actualNumOfLatches += fsm.getClusters().size(); // number of one-hot encoded clusters +
+        for (Cluster cluster : fsm.getClusters()){
+            actualNumOfLatches += getClusterInternalLatches(cluster).length; //for each cluster, the amount of internal latches
+        }
+        latches = new String[actualNumOfLatches];
+        String[] externalClusterLatches = getExternalClusterLatches(fsm);
+        int ii=0;
+        for (; ii<externalClusterLatches.length; ii++){
+            latches[ii]=externalClusterLatches[ii]; // first n (# of clusters) latches for external cluster one hot
+        }
+        int handled = ii;
+        for (Cluster cluster : fsm.getClusters()){
+            String[] internalClusterLatches = getClusterInternalLatches(cluster);
+            int jj=0;
+            for (; ii<handled+internalClusterLatches.length; ii++){
+                latches[ii] = internalClusterLatches[jj];
+                jj++;
+            }
+            handled=ii;
+        }
         return latches;
-
     }
 
+    /**
+     * Returns a String[] which holds the names of inter-cluster latches
+     * Latches for a cluster are named:
+     *  vCl+ClusterID
+     * for each cluster
+     * @param fsm the modeled StateMachine
+     * @return an String[] if fsm!=null
+     */
     private static String[] getExternalClusterLatches(StateMachine fsm){
         String[] latches;
         Set<Cluster> clusters = fsm.getClusters();
         latches = new String[clusters.size()];
         int ii=0;
         for (Cluster cluster : clusters){
-            latches[ii] = "v"+cluster.getID()+ " ";
+            latches[ii] = "vCl"+cluster.getID()+ " ";
         }
         return latches;
     }
 
+    /**
+     * Returns an array of names for the intra-cluster necessary latches.
+     * Latches are named:
+     *  vS+ClID+ClusterID+S+ii
+     * where
+     *  ClusterID is the ID of the correspondent cluster and
+     *  ii is the number of the latch
+     * @param cluster The cluster whose internals are modeled
+     * @return a String[] if cluster!=null
+     */
     private static String[] getClusterInternalLatches(Cluster cluster){
-        String[] latches = null;
-        int len;
+        String[] latches = new String[cluster.getCode().length()]; // as many latches as bits there are in the code, is it?
+        for (int ii=0; ii<latches.length; ii++){
+            latches[ii]= "vSClID"+cluster.getID()+"S"+ii;
+        }
         return latches;
 
     }
@@ -147,5 +198,53 @@ public class StateMachineWriter {
         }
         return outs;
 
+    }
+
+    /**
+     * Returns a string which places the given code right. all other values are assigned to zero (??)
+     * @param offset
+     * @param totalLength the total length (=number of latches) for the encoding
+     * @param code
+     * @return a String of length totalLength with the code placed at position offset
+     */
+    private static String getStateCode(int offset, int totalLength, String code){
+        String str = "";
+        for (int ii=0; ii<offset; ii++){
+            str+="0";
+        }
+        str+=code;
+        for (int ii=0; ii<totalLength-offset-code.length(); ii++){
+            str+="0";
+        }
+        return str;
+    }
+
+    /**
+     * Returns the offset in the latch-order list string for the given cluster latches
+     * @param latches the String[] with the latch strings
+     * @param cluster the cluster whose latches' offset shall be found
+     * @return the offset from zero of the latches in the latch list for the given cluster's latches storing the states
+     */
+    private static int getClusterOffset(String[] latches, Cluster cluster){
+        int offset = 0;
+
+        while (offset<latches.length){
+            if (latches[offset].startsWith("vSClID"+cluster.getID())) {
+                return offset;
+            }
+            offset++;
+        }
+        return offset;
+    }
+
+    /**
+     * Transforms the states code (which has been assigned in the encoding) from a 'long' representation to a
+     * String representation (easier to print in BLIF)
+     * @param code the state's code as java.long
+     * @return the state's code as java.String
+     */
+    public static String getStateCodeFromLong(long code){
+        #// TODO: 04.06.2017 implement method 
+        return "";
     }
 }
