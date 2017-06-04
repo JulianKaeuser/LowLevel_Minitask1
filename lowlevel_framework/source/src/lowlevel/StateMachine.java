@@ -7,9 +7,27 @@ import java.util.Set;
  */
 public class StateMachine {
 
+    public String name;
+
     private Set<Cluster> clusters;
 
+    //todo
     public String getEncoding(){
-        
+        return null;
+    }
+
+    // todo
+    public int getNumInputs() {
+        return 0;
+    }
+
+
+    public Set<Cluster> getClusters() {
+        return clusters;
+    }
+
+    // todo
+    public int getNumOutputs() {
+        return 0;
     }
 }
