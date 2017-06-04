@@ -57,7 +57,7 @@ public class Main {
 				System.out.println("Number of read files: "+inputFiles.length);
 				int ii=0;
 				for (ParsedFile pf : inputFiles) {
-					System.out.println("file #"+ii+" states count: "+pf.getNum_states());
+					System.out.println("file #"+ii+" states count: "+pf.getNum_states()+ "\t # inputs: "+pf.getNumInputs()+ "\t #outputs: "+pf.getNumOutputs());
 					ii++;
 				}
 			}
