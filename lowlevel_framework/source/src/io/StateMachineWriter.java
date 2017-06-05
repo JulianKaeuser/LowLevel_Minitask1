@@ -3,6 +3,7 @@ package io;
 import lowlevel.Cluster;
 import lowlevel.State;
 import lowlevel.StateMachine;
+import lowlevel.Transition;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,10 +55,21 @@ public class StateMachineWriter {
         bld.append(".i "+fsm.getNumInputs()+"\n");
         bld.append(".o "+fsm.getNumOutputs()+"\n");
         // states and transitions
-        //bld.append(".p "+fsm.getNumTransistions()+"\n");
-        //bld.append(".s "+fsm.getNumStates()+"\n");
-        //bld.append(".r "+fsm.getResetState());
-
+        bld.append(".p "+fsm.getNumTransitions()+"\n");
+        bld.append(".s "+fsm.getNumStates()+"\n");
+        if (fsm.getResetState()!=null){
+            bld.append(".r "+fsm.getResetState().getName());
+        }
+        // build functional description of fsm (which actually exists with the input file...
+        for (Transition trans : fsm.getTransitions()){
+            bld.append(Long.toBinaryString(trans.getInput()));
+            bld.append(" ");
+            bld.append(trans.getOriginState().getName());
+            bld.append(" ");
+            bld.append(trans.getTargetState().getName());
+            bld.append(Long.toBinaryString(trans.getOriginState().output(trans.getInput())));
+            bld.append("\n");
+        }
 
         bld.append(".end_kiss\n");
         //latch mapping
@@ -72,6 +84,9 @@ public class StateMachineWriter {
              */
         }
         bld.append("\n");
+
+
+
 
         // print codes of states
         for (Cluster cluster : fsm.getClusters()){
