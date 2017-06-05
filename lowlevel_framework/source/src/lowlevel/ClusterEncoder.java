@@ -58,6 +58,28 @@ public class ClusterEncoder {
         return map;
     }
 
+    /**
+     * Assigns a code and ID to each cluster of the given fsm. The resulting codes (binary String) for each cluster
+     * are retured in a HashMap of Clusters and Strings. Additionally, for each cluster in the fsm, the method
+     * Cluster.setID(long id) and setCode(String code) are called with the computed value as parameter.
+     * @param fsm the StateMachine to work on
+     * @assert fsm!=null
+     * @return A Map of Strings to clusters
+     */
+    public static HashMap<Cluster, String> assignClusterCodes (StateMachine fsm){
+        HashMap<Cluster, String> map = new HashMap<Cluster, String>();
+
+        long ii = 1;
+        for (Cluster cluster : fsm.getClusters()){
+            cluster.setID(ii);
+            cluster.setCode(Long.toBinaryString(ii));
+            map.put(cluster, Long.toBinaryString(ii));
+            ii*=2;
+        }
+        return map;
+
+
+    }
 
 
 

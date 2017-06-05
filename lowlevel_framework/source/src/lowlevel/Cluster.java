@@ -20,6 +20,8 @@ public class Cluster {
 
     private long id;
 
+    private String code;
+
     private int numInputs;
 
     public Cluster(){
@@ -85,7 +87,11 @@ public class Cluster {
 
 
     public String getCode(){
-        return "";
+        return code;
+    }
+
+    public void setCode(String code){
+        this.code = code;
     }
 
     public int getClusterStateLatches(){
