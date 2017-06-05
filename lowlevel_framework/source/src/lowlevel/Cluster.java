@@ -14,7 +14,9 @@ public class Cluster {
     private int clusterStateLatches; // the number of latches needed to store the states in this cluster. depends on encoding (one-hot/binary)
 
     // should be either "binary" or "onehot"
-    private String internalEncoding;
+    private Encoding internalEncoding;
+
+    private boolean encoded;
 
     private long id;
 
@@ -48,11 +50,11 @@ public class Cluster {
         return states.remove(state);
     }
 
-    public String getEncoding(){
+    public Encoding getEncoding(){
         return internalEncoding;
     }
 
-    public void setEncoding(String enc){
+    public void setEncoding(Encoding enc){
         internalEncoding=enc;
     }
 
@@ -80,23 +82,7 @@ public class Cluster {
         return this.transitions.size();
     }
 
-    public String getEncodedCluster(){
-        StringBuilder bld = new StringBuilder();
 
-       // ClusterEncoder enc = new ClusterEncoder();
-        HashMap<State, String> map = null;
-        switch (getEncoding()) {
-            case "binary":
-                //map = enc.encodeBinary(this.getStateArray(), this.getInputs());
-            case "onehot":
-                //map = enc.encodeOneHot(this.getStateArray(), this.getInputs());
-        }
-        for (State s : map.keySet()) {
-            String str = ".code "+s.getName()+" "+map.get(s)+"\n";
-            bld.append(str);
-        }
-        return bld.toString();
-    }
 
     public String getCode(){
         return "";
@@ -104,5 +90,13 @@ public class Cluster {
 
     public int getClusterStateLatches(){
         return clusterStateLatches;
+    }
+
+    public void setEncoded(boolean encoded){
+        this.encoded = encoded;
+    }
+
+    public boolean isEncoded(){
+        return encoded;
     }
 }
