@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import lowlevel.Cluster;
+import lowlevel.State;
+import lowlevel.StateMachine;
 
 /**
  * Main class
@@ -55,17 +57,20 @@ public class Main {
 				}
 			}
 			Parser p = new Parser();
-			//p.parseFile(input_file_name);
+			p.parseFile(input_file_name);
 			
 			// Representation of the FSM
-			//ParsedFile fsm = p.getParsedFile();
-			//System.out.println(fsm);
+			ParsedFile fsm = p.getParsedFile();
+			System.out.println(fsm);
 			
 
 			
 			// TODO - here you go
-
-			Cluster myCluster = new Cluster();
+/*
+			StateMachine myStateMachine = new StateMachine();
+			for(State aState : fsm.getStates()){
+				myStateMachine.addState(aState);
+			} */
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
 		}
 		else{
