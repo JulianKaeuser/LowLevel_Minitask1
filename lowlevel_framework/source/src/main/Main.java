@@ -16,7 +16,7 @@ import lowlevel.StateMachine;
  *
  */
 public class Main {
-	
+
 	public static void main(String[] args) {
 				
 		if(args.length>0){
@@ -29,8 +29,10 @@ public class Main {
 			input_file_name = userDir+relPath+input_file_name;
 
 			File dir = new File(path);
+			System.out.println(path);
+
 			ParsedFile[] inputFiles = null;
-			if (args.length>1 && args[1]!=null  && args[1]=="-all" && dir.isDirectory()){
+			if (args.length>1 && args[1]!=null  && args[1].equals("-all") && dir.isDirectory()){
 				// args[0] is a directory, and all files of the directory shall be parsed
 				FilenameFilter filter = new FilenameFilter() {
 					@Override
@@ -41,7 +43,9 @@ public class Main {
 						return false;
 					}
 				};
+
 				inputFiles = new ParsedFile[dir.listFiles(filter).length];
+
 				int ii=0;
 				for (File file : dir.listFiles(filter)) {
 					Parser p = new Parser();
@@ -52,8 +56,11 @@ public class Main {
 			}// from this point on one could work on the whole folder... just for benchmarking reasons
 
 			if (inputFiles!=null) {
+				System.out.println("Number of read files: "+inputFiles.length);
+				int ii=0;
 				for (ParsedFile pf : inputFiles) {
-					System.out.println(pf.getNum_states());
+					System.out.println("file #"+ii+" states count: "+pf.getNum_states()+ "\t # inputs: "+pf.getNumInputs()+ "\t #outputs: "+pf.getNumOutputs());
+					ii++;
 				}
 			}
 			Parser p = new Parser();
