@@ -1,14 +1,10 @@
 package main;
 
 import io.Parser;
-import lowlevel.ParsedFile;
+import lowlevel.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
-
-import lowlevel.Cluster;
-import lowlevel.State;
-import lowlevel.StateMachine;
 
 /**
  * Main class
@@ -73,11 +69,24 @@ public class Main {
 
 			
 			// TODO - here you go
-/*
-			StateMachine myStateMachine = new StateMachine();
-			for(State aState : fsm.getStates()){
+			/*
+			for(int i=0;i<fsm.getStates().length;i++){
+				System.out.println("State: "+fsm.getStates()[i].getName());
+				for(StateTransition aTras : fsm.getStates()[i].getOutgoingTransitions()){
+					System.out.println("Transition to: "+aTras.getTarget().getName());
+
+				}
+			}*/
+
+
+		//	fsm.getStates()[0].getOutgoingTransitions();
+
+			StateMachine myStateMachine = new StateMachine(fsm);
+		/*	for(State aState : fsm.getStates()){
 				myStateMachine.addState(aState);
 			} */
+			myStateMachine.combineClusters(6);
+			myStateMachine.debugPrintClusters();
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
 		}
 		else{

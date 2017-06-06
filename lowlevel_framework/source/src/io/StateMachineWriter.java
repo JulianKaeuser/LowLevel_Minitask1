@@ -64,10 +64,10 @@ public class StateMachineWriter {
         for (Transition trans : fsm.getTransitions()){
             bld.append(Long.toBinaryString(trans.getInput()));
             bld.append(" ");
-            bld.append(trans.getOriginState().getName());
+            bld.append(trans.getOrigin().getName());
             bld.append(" ");
-            bld.append(trans.getTargetState().getName());
-            bld.append(Long.toBinaryString(trans.getOriginState().output(trans.getInput())));
+            bld.append(trans.getTarget().getName());
+            bld.append(Long.toBinaryString(trans.getOrigin().output(trans.getInput())));
             bld.append("\n");
         }
 
