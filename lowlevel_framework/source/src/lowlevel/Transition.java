@@ -49,6 +49,7 @@ public class Transition{ //T ist Cluster ODER State
             return true;
         return false;
     }
+
 /*
     public void setCluster(Cluster originCluster, Cluster targetCluster){
         this.originCluster = originCluster;
