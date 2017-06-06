@@ -64,6 +64,7 @@ public class ClusterEncoder {
      * Cluster.setID(long id) and setCode(String code) are called with the computed value as parameter.
      * @param fsm the StateMachine to work on
      * @assert fsm!=null
+     * @assert number of clusters in the fsm must not exceed 63 (by now)
      * @return A Map of Strings to clusters
      */
     public static HashMap<Cluster, String> assignClusterCodes (StateMachine fsm){

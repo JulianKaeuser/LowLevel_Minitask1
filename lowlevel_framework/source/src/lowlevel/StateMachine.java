@@ -1,5 +1,6 @@
 package lowlevel;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -9,12 +10,18 @@ public class StateMachine {
 
     public String name;
 
+    private Encoding enc;
+
     private Set<Cluster> clusters;
 
-    //todo
-    public String getEncoding(){
-        return null;
+    public void setEncoding(Encoding enc){
+        this.enc = enc;
     }
+    public Encoding getEncoding(){
+        return enc;
+    }
+
+
 
     // todo
     public int getNumInputs() {
@@ -29,5 +36,24 @@ public class StateMachine {
     // todo
     public int getNumOutputs() {
         return 0;
+    }
+
+    // todo
+    public int getNumTransitions(){
+        return 0;
+    }
+
+    // todo
+    public State getResetState(){
+        return null;
+    }
+    //todo
+    public int getNumStates(){
+        return 0;
+    }
+
+    // todo
+    public Collection<Transition> getTransitions(){
+        return null;
     }
 }
