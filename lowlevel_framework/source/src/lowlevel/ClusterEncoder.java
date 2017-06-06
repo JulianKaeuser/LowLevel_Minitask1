@@ -40,8 +40,8 @@ public class ClusterEncoder {
                 map.put(state, str);
                 ii++;
             }
-            cluster.setEncoded(true);
-            cluster.setEncoding(Encoding.BINARY);
+        //    cluster.setEncoded(true);
+         //   cluster.setEncoding(Encoding.BINARY);
         }
         else if (enc.equals(Encoding.ONEHOT)){
             long ii=1;
@@ -51,8 +51,8 @@ public class ClusterEncoder {
                 map.put(state, str);
                 ii*=2;
             }
-            cluster.setEncoded(true);
-            cluster.setEncoding(Encoding.ONEHOT);
+        //    cluster.setEncoded(true); //das gibt es nicht was macht das ?
+           // cluster.setEncoding(Encoding.ONEHOT);
         }
 
         return map;
@@ -72,7 +72,7 @@ public class ClusterEncoder {
         long ii = 1;
         for (Cluster cluster : fsm.getClusters()){
             cluster.setID(ii);
-            cluster.setCode(Long.toBinaryString(ii));
+        //    cluster.setCode(Long.toBinaryString(ii));
             map.put(cluster, Long.toBinaryString(ii));
             ii*=2;
         }
