@@ -1,6 +1,7 @@
 package main;
 
 import io.Parser;
+import io.StateMachineWriter;
 import lowlevel.*;
 
 import java.io.File;
@@ -88,6 +89,15 @@ public class Main {
 			myStateMachine.combineClusters(6);
 			myStateMachine.debugPrintClusters();
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
+
+			// here the output file of the state machine should be printed
+			/*
+			ClusterEncoder.assignClusterCodes(myStateMachine);
+			for (Cluster cluster : myStateMachine.getClusters()){
+				ClusterEncoder.encodeCluster(cluster, Encoding.BINARY);
+			}
+			StateMachineWriter.writeFSM(myStateMachine, System.lineSeparator()+"output");
+			*/
 		}
 		else{
 			System.out.println("No input argument given");
