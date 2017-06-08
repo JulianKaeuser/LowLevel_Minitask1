@@ -23,7 +23,7 @@ public class Main {
 			String relPath = "\\lowlevel_framework\\benchmarks\\kiss_files\\";
 			String userDir = System.getProperty("user.dir");
 			String path = userDir+relPath;
-			input_file_name = userDir+relPath+input_file_name;
+			input_file_name = userDir+relPath;//+input_file_name;
 
 			File dir = new File(path);
 			System.out.println(path);
@@ -102,5 +102,7 @@ public class Main {
 		else{
 			System.out.println("No input argument given");
 		}
+
+		
 	}
 }
