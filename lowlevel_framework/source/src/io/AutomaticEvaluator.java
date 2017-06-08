@@ -41,5 +41,9 @@ public class AutomaticEvaluator {
 
     }
 
+    public void automatedAnalysis (String pathToInputFiles, String[] abcParams, int maxInputs, int lutSize){
+
+    }
+
 
 }
