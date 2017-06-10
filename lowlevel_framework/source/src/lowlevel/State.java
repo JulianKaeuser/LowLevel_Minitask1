@@ -8,7 +8,7 @@ import java.util.*;
  *
  */
 
-// Da diese Klasse ungeignet und grotten hässlich war wurde sie umgebaut!
+// Da diese Klasse ungeignet war wurde sie umgebaut!
 
 public class State{
 	private String stateName;
@@ -23,7 +23,7 @@ public class State{
 	private Cluster cluster=null;
 
 	public State(){
-		this.stateName="Name not SET!";
+		this.stateName="Name NOT set!";
 	}
 
 	public State(String name){
@@ -63,11 +63,6 @@ public class State{
 
 		if(nextState!=this){						// increase transition count for both, this and nextState
 			nextState.addIngoingTransition(this, input);
-		/*	if(transitionCount.get(nextState)==null){
-				transitionCount.put(nextState, 1);
-			}
-			transitionCount.put(nextState, transitionCount.get(nextState)+1);
-			total_transitions++; */
 		}
         Transition newTranstion = new Transition(input, nextState, this);
 		this.outgoingTransitions.put(input, newTranstion);
@@ -149,19 +144,19 @@ public class State{
 	}
 	*/
 
-	public Set<Transition> getTransitions(){
-	    Set<Transition> retSet = (HashSet <Transition>) this.outgoingTransitions.values();
-        retSet.addAll(this.incomingTransitions.values());
-        return retSet;
+	public List<Transition> getTransitions(){
+		List<Transition> retList = new ArrayList<Transition>(this.outgoingTransitions.values());
+		retList.addAll(this.incomingTransitions.values());
+        return retList;
 	}
 
 
-	public Set<Transition> getOutgoingTransitions(){
-		return new HashSet<Transition>(this.outgoingTransitions.values());
+	public List<Transition> getOutgoingTransitions(){
+		return new ArrayList(this.outgoingTransitions.values());
 	}
 
-	public Set<Transition> getIncomingTransitions(){
-        return new HashSet<Transition>(this.incomingTransitions.values());
+	public List<Transition> getIncomingTransitions(){
+        return new ArrayList(this.incomingTransitions.values());
 	}
 	/**
 	 * Returns a 2-dim array representing the outputs.
