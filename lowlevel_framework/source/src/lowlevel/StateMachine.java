@@ -25,9 +25,12 @@ public class StateMachine {
         this.clusters.add(newCluster);
     }
 
-    //kombiniert die Cluster so das es nur Cluster gibt deren Eingänge plus Zustände kleiner gleich N sind AUßER der erste Cluster der alle "Reste" hällt!
+    //kombiniert die Cluster so das es nur Cluster gibt deren Eingänge
+    // plus Zustände kleiner gleich N sind AUßER der erste Cluster der alle "Reste" hällt!
     public void combineClusters(int N){
-        //nimm dir einen Cluster un versuch Ihn mit seinem Nachbarn zu verschmelzen. Wenn es geht enferne den Nachbarn aus der todoliste und versuch ihn weiter zu verschmelzen bis nichts mehr geht
+        //nimm dir einen Cluster un versuch Ihn mit seinem Nachbarn zu verschmelzen.
+        //Wenn es geht enferne den Nachbarn aus der todoliste und
+        // versuch ihn weiter zu verschmelzen bis nichts mehr geht
         List<Cluster> todoList = new ArrayList<Cluster>(this.clusters);
         while(!todoList.isEmpty()){
             Cluster myCluster = todoList.remove(0);
@@ -64,7 +67,8 @@ public class StateMachine {
             }
         }
 
-        //jetzt gibt es Cluster die gut sortiert sind (N erfüllen und mehere Zustände haben), solche die nicht N erfüllen und sollche die nur 1 Zustand haben
+        //jetzt gibt es Cluster die gut sortiert sind (N erfüllen und mehere Zustände haben),
+        // solche die nicht N erfüllen und sollche die nur 1 Zustand haben
         //wir packen alle Cluster die
         this.defaultCluster = new Cluster();
         defaultCluster.setName("Default Cluster");

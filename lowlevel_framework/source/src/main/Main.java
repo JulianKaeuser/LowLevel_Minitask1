@@ -1,6 +1,7 @@
 package main;
 
 import io.Parser;
+import io.StateMachineWriter;
 import lowlevel.*;
 
 import java.io.File;
@@ -22,7 +23,7 @@ public class Main {
 			String relPath = "\\lowlevel_framework\\benchmarks\\kiss_files\\";
 			String userDir = System.getProperty("user.dir");
 			String path = userDir+relPath;
-			input_file_name = userDir+relPath+input_file_name;
+			input_file_name = userDir+relPath;//+input_file_name;
 
 			File dir = new File(path);
 			System.out.println(path);
@@ -88,9 +89,20 @@ public class Main {
 			myStateMachine.combineClusters(6);
 			myStateMachine.debugPrintClusters();
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
+
+			// here the output file of the state machine should be printed
+			/*
+			ClusterEncoder.assignClusterCodes(myStateMachine);
+			for (Cluster cluster : myStateMachine.getClusters()){
+				ClusterEncoder.encodeCluster(cluster, Encoding.BINARY);
+			}
+			StateMachineWriter.writeFSM(myStateMachine, System.lineSeparator()+"output");
+			*/
 		}
 		else{
 			System.out.println("No input argument given");
 		}
+
+		
 	}
 }
