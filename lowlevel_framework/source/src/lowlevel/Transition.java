@@ -1,33 +1,24 @@
 package lowlevel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by theChaoS on 04.06.2017.
  */
-public class Transition{ //T ist Cluster ODER State
-//    private State state;
+public class Transition{
     private long input;
 
     private State target; //Ziel
     private State origin;
 
-  //  private boolean incoming; //was nicht incoming ist, ist outgoing !
 
     public Transition(long input, State target, State origin){
-//        this.incoming = incoming;
-//        this.state = corrospondingState;
         this.input=input;
         this.target=target;
         this.origin=origin;
     }
-/*
-    public boolean isIncoming(){
-        return this.incoming;
-    }
-*/
-/*    public State getState(){
-        return this.state;
-    }
-*/
+
     public long getInput(){
         return this.input;
     }
@@ -48,6 +39,37 @@ public class Transition{ //T ist Cluster ODER State
         if(this.target!=null&&this.origin!=null)
             return true;
         return false;
+    }
+
+    /**
+     * Takes a List<Long> with this special-kind-idontknowthename- encoding for {1,0,-} and checks
+     * how many common bits that are not-dontcare they have.
+     * @param a list of Longs representing inputs in this kind of notation
+     * @return the amount of bits represented by the notation which are not dontcares at the same position
+     * in the bit vector.
+     */
+    // Gibt die Anzahl der Bits an die in den Transitionen vorhanden sein müssen da diese Relefanz haben.
+    //Beispiel : t1.input = 1-0- und t2.input = 11--. Dann ist das Resultat 3
+    public static int getNumberOfBitsThatCare(List<Transition> inputTransitions){
+        List<Long> inputs = new ArrayList<Long>();
+        for(Transition t: inputTransitions){
+            inputs.add(t.getInput());
+        }
+        int result = 0;
+
+        long tmp = 0x0;
+        for (Long in : inputs){
+            tmp |= ~in.longValue();
+        }
+        for (int ii=0; ii<Long.bitCount(tmp); ii+=2){
+            long cmp = 0x3 << ii;
+            cmp = ~cmp;
+            long tmp2 = (tmp | cmp);
+            if (cmp==tmp2){
+                result++;
+            }
+        }
+        return result;
     }
 
 /*

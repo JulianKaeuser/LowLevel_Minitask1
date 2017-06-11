@@ -86,8 +86,10 @@ public class Main {
 		/*	for(State aState : fsm.getStates()){
 				myStateMachine.addState(aState);
 			} */
-			myStateMachine.combineClusters(6);
-			myStateMachine.debugPrintClusters();
+		//	Transition.getNumberOfBitsThatCare(myStateMachine.getTransitions());
+		//	myStateMachine.combineClusters(5);
+			myStateMachine.doClustering(8);
+		//	myStateMachine.debugPrintClusters();
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
 
 			// here the output file of the state machine should be printed

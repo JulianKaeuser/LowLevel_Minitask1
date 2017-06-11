@@ -128,11 +128,31 @@ public class Cluster{
         if((N_trans+N_states)>N_max)
             return false;
 
-        for(State state : otherCluster.getStates()){
-            state.setCluster(this);
-            this.states.add(state);
-        }
+        this.combineCluster(otherCluster);
         return true;
+    }
+
+    public void combineCluster(Cluster otherCluster){
+        Set<State> myStates = this.states;
+        for(State s: otherCluster.getStates()){
+            this.addState(s);
+        }
+        /*
+
+        for (Transition otherTrans : otherTransitions){
+            for(State state: this.getStates()){
+                if(otherTrans.getOrigin()==state){ //wenn eine andere Transition in unserem Cluster Ihren Ursprung hat so können wir N verkleineren um 1
+                    N_trans--;
+                }
+            }
+        }
+        for (Transition ourTrans : myTransitions){
+            for(State state: otherCluster.getStates()){
+                if(ourTrans.getOrigin()==state){ //wenn eine unserer Transition in anderem Cluster Ihren Ursprung hat so können wir N verkleineren um 1
+                    N_trans--;
+                }
+            }
+        } */
 
         //Mist das geht so leider nicht ! Ich muss es doch noch alles anfassen XD
         /*
@@ -147,23 +167,14 @@ public class Cluster{
         }
         return false;
         */
-    }
-
-    public void forceCombineCluster(Cluster otherCluster){
-        Set<State> myStates = this.states;
-        myStates.addAll(otherCluster.getStates());
+        //transitions !
         this.states = myStates;
     }
 
     public Set<State> getStates(){
         return this.states;
     }
-/*
-    public void changeClusterOfState(State state, Cluster newCluster){
-        this.removeState(state);
-        newCluster.addState(state);
-    }
-*/
+
     public State[] getStateArray(){
         return (State[]) states.toArray();
     }
@@ -223,12 +234,40 @@ public class Cluster{
     }
 
     public int getN(){
-        return this.getNumberOfIncomingTranstions()+this.getNumberOfStates();
+        return this.getNumberOfIncomingTranstions()+((int)Math.ceil((Math.log(this.getNumberOfStates())/Math.log(2))))+Transition.getNumberOfBitsThatCare(this.getIncomingInterClusterTransitionsAsList());
     }
 
     public String getCode(){
         return "EIN CLUSTER HAT KEIN CODE";
     }
+
+    public static int callculateNofMultipleClusters(List<Cluster> clusters){
+        int N_states = 0;
+        List<Transition> allTransitions = new ArrayList<Transition>();
+        List<State> allStates = new ArrayList<State>();
+        for(Cluster c : clusters){
+            N_states += c.getNumStates(); //States zählen
+            allTransitions.addAll(c.getIncomingInterClusterTransitionsAsList()); //Transitions sammeln
+            allStates.addAll(c.getStates()); //States sammeln
+        }
+        N_states=(int)Math.ceil(Math.log(N_states)/Math.log(2));
+
+        int N_trans = allTransitions.size();//Maximale Transtion Zahl errechnen
+        // ggf abziehen !
+        for (Transition t : allTransitions){
+            for(State s: allStates){
+                if(t.getOrigin()==s){ //wenn eine andere Transition in unserem Cluster Ihren Ursprung hat so können wir N verkleineren um 1
+                    N_trans--;
+                }
+            }
+        }
+
+        //Bites that care errechnen
+        int N_bit_care = Transition.getNumberOfBitsThatCare(allTransitions);
+        return N_trans+N_states+N_bit_care;
+    }
+
+
 /*
     public int getInputs(){ //der Name ist blöd und Cluster soll das nicht mehr machen
         return numInputs;
