@@ -113,6 +113,5 @@ public class Main {
 		aut.setOutputPath(userDir+"\\abc_output");
 		System.out.println(userDir);
 		aut.automatedAnalysis(userDir, params);
-		
 	}
 }
