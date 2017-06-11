@@ -131,4 +131,6 @@ public class simulatedAnnealing {
         else if(0.15<=alpha && alpha<0.8) return 0.95*tCurr;
         else return 0.8*tCurr;
     }
+
+    ///kommi zum commiten
 }
