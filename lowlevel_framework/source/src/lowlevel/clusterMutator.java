@@ -63,6 +63,7 @@ public class clusterMutator {
                 choosen_cluster = clusters.get(cluster_pos);
             }
             choosen_cluster.combineCluster(newCluster);
+            // ich füg mal nen kommi ein
 
             //ausrechnen ob man nochmal in den gleichen Cluster schreibt
             if( Math.random()*100-times_cluster_was_reused*5 > 75) { //wir wollen mit kleiner Warscheinlichkeit (maximal 25 %) den Cluster reusen
