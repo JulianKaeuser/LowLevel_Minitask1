@@ -11,10 +11,10 @@ public class SimulatedAnnealing {
     private List<Cluster> clusters;
 
     private static final double innerNumber = 1.0;
-    private static clusterMutator mutator;
+    private static ClusterMutator mutator;
 
     private static void setMutator(){
-        mutator = new FSMClusterMutator();
+        mutator = new ClusterMutator();
     }
 
     /*
@@ -59,7 +59,7 @@ public class SimulatedAnnealing {
             int accepted = 0;
             while(ii<= nIterations){
                 ii++;
-                List<Cluster> sNew = mutator.mutate(sCurr);
+                List<Cluster> sNew = mutator.mutatedClusters(sCurr, 199999999, 8);
                 double newFitness = ff.getFitness(sNew);
                 double deltaFitness = newFitness - currentFitness;
                 if(newFitness==0.0){
@@ -98,11 +98,11 @@ public class SimulatedAnnealing {
         double sDev = 0.0;
         double[] fitnesses = new double[n];
         List<Cluster> list = mutator.getInitialS(fsm);
-        list = mutator.mutate(list);
+        list = mutator.mutatedClusters(list, 19999090, 8);
         double currentFitness = ff.getFitness(list);
         double mean = 0.0;
         for (int ii= 0; ii<n; ii++){
-            double newFitness = ff.getFitness(mutator.mutate(list));
+            double newFitness = ff.getFitness(mutator.mutatedClusters(list, 1999090, 8));
             fitnesses[ii] = currentFitness - newFitness;
             currentFitness = newFitness;
             mean += fitnesses[ii];
