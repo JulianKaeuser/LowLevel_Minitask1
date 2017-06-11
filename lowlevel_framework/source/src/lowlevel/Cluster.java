@@ -175,6 +175,10 @@ public class Cluster{
         return this.states;
     }
 
+    public List<State> getStatesAsList(){
+        return new ArrayList<State>(this.states);
+    }
+
     public State[] getStateArray(){
         return (State[]) states.toArray();
     }
