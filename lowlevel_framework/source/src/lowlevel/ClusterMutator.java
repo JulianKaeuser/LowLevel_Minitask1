@@ -7,7 +7,6 @@ import java.util.List;
  * Created by Julian Käuser on 11.06.2017.
  */
 public class ClusterMutator {
-
     /**
      * Returns an initial clustering, where
      * - each state in the parsed fíle has its own cluster
@@ -32,7 +31,7 @@ public class ClusterMutator {
      * @param numOfOperations how many things should be changed
      * @return a new solution
      */
-    public List<Cluster> mutatedClusters (List<Cluster> currentClusters, int numOfOperations, int N_max){
+    public List<Cluster> mutateClusters (List<Cluster> currentClusters, int numOfOperations){
         List<Cluster> clusters = currentClusters;
         List<State> allStates = new ArrayList<State>();
         for(Cluster c: currentClusters){
@@ -42,7 +41,7 @@ public class ClusterMutator {
         boolean reuse_cluster=false;
         int times_cluster_was_reused=0;
         Cluster choosen_cluster=null;
-        if(numOfOperations>0){
+        while(numOfOperations>0){
             //schnap dir irgendein state
             int state_pos=(int)(Math.random() * (allStates.size()-0.00001)); //-0.00001 damit wir keinen Überlauf bekommen ^^
             //löse den aus den Cluster den er jetzt hat
