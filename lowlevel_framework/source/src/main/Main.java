@@ -1,5 +1,6 @@
 package main;
 
+import io.AutomaticEvaluator;
 import io.Parser;
 import io.StateMachineWriter;
 import lowlevel.*;
@@ -23,7 +24,7 @@ public class Main {
 			String relPath = "\\lowlevel_framework\\benchmarks\\kiss_files\\";
 			String userDir = System.getProperty("user.dir");
 			String path = userDir+relPath;
-			input_file_name = userDir+relPath;//+input_file_name;
+			input_file_name = userDir+relPath+input_file_name;
 
 			File dir = new File(path);
 			System.out.println(path);
@@ -102,7 +103,14 @@ public class Main {
 		else{
 			System.out.println("No input argument given");
 		}
+		System.out.println("Beginning Automation");
+		String[] params = {};
+		AutomaticEvaluator aut = new AutomaticEvaluator();
 
+		String userDir = System.getProperty("user.dir")+"\\lowlevel_framework\\abc";
+		aut.setOutputPath(userDir+"\\abc_output");
+		System.out.println(userDir);
+		aut.automatedAnalysis(userDir, params);
 		
 	}
 }
