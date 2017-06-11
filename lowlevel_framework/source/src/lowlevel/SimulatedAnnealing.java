@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * Created by Julian Käuser on 11.06.2017.
  */
-public class simulatedAnnealing {
+public class SimulatedAnnealing {
 
     private List<Cluster> clusters;
 
     private static final double innerNumber = 1.0;
-    private static FSMClusterMutator mutator;
+    private static clusterMutator mutator;
 
     private static void setMutator(){
         mutator = new FSMClusterMutator();

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Julian Käuser on 11.06.2017.
  */
-public class clusterMutator {
+public class ClusterMutator {
 
     /**
      * Returns an initial clustering, where
@@ -18,9 +18,7 @@ public class clusterMutator {
         List<Cluster> initialList = new ArrayList<Cluster>();
 
         for (State state : fsm.getStates()){
-            Cluster nC = new Cluster();
-            nC.addState(state);
-            // transitions here
+            Cluster nC = new Cluster(state);
 
             initialList.add(nC);
         }
