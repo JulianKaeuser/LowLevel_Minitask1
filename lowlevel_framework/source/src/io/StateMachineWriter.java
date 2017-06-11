@@ -37,52 +37,28 @@ public class StateMachineWriter {
             fsm.name=new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         }
         StringBuilder bld = new StringBuilder();
-        bld.append("# "+fsm.name +" encoded cluster-wise\n");
-        bld.append(".model "+fsm.name);
+        bld.append("# "+fsm.name +" encoded cluster-wise\n"); //commentar, therefore correct
+        bld.append(".model "+fsm.name); // Correct for BLIF
 
         //in and outputs for the _logic_ model
-        bld.append(buildInputs(fsm));
-        bld.append(buildOutputs(fsm));
+        bld.append(buildInputs(fsm)); // correct for BLIF
+        bld.append(buildOutputs(fsm)); // COrrect for BLIF
 
-        // latch initilizations
-        String[] latches = getLatches(fsm);
-        for (String l : latches){
-            bld.append(".latch "+l+"\n");
-        }
+        bld.append(".m "+ fsm.getNumStates()+" \n"); // is that correct?
+        bld.append(".clock clk\n"); // correct for BLIF
+
+        // create a commentary section with states and their codes/cluisters and their codes
+
+        bld.append(getSymbolicCodes(fsm));
+        /*todo: format
+        .latch next_state state re clk 0;
+
+        */
 
 
-        bld.append(".start_kiss");
-        bld.append(".i "+fsm.getNumInputs()+"\n");
-        bld.append(".o "+fsm.getNumOutputs()+"\n");
-        // states and transitions
-        bld.append(".p "+fsm.getNumTransitions()+"\n");
-        bld.append(".s "+fsm.getNumStates()+"\n");
-        if (fsm.getResetState()!=null){
-            bld.append(".r "+fsm.getResetState().getName());
-        }
         // build functional description of fsm (which actually exists with the input file...
-        for (Transition trans : fsm.getTransitions()){
-            bld.append(Long.toBinaryString(trans.getInput()));
-            bld.append(" ");
-            bld.append(trans.getOrigin().getName());
-            bld.append(" ");
-            bld.append(trans.getTarget().getName());
-            bld.append(Long.toBinaryString(trans.getOrigin().output(trans.getInput())));
-            bld.append("\n");
-        }
-
-        bld.append(".end_kiss\n");
-        //latch mapping
-        bld.append(".latch_order ");
 
 
-        for (int ii=0; ii<latches.length; ii++){
-            bld.append(latches[ii]);
-            /*
-            note: the first n latches are associated with the one-hot cluster encoding,
-            then the next
-             */
-        }
         bld.append("\n");
 
 
@@ -261,5 +237,21 @@ public class StateMachineWriter {
     public static String getStateCodeFromLong(long code){
         // TODO: 04.06.2017 implement method
         return "";
+    }
+
+    /**
+     * Returns the symbolic encoding of the states for the commentary section - just for readability reasons
+     * @param fsm the state machine
+     * @return A string holding the encoding as commentars headed with "#" character
+     */
+    public String getSymbolicCodes(StateMachine fsm){
+        StringBuilder bld = new StringBuilder();
+        bld.append("# state codes");
+
+        for (Cluster cluster : fsm.getClusters()){
+            for (State state : cluster.getStates()){
+                bld.append("# "+ state.getName()+ " ")
+            }
+        }
     }
 }
