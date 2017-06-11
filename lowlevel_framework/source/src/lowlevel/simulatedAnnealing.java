@@ -48,14 +48,13 @@ public class simulatedAnnealing {
         // we have N=numStates elements to alter
         double nIterations = Math.pow(innerNumber, (4/3))* fsm.getNum_states();
 
-        double t = getInitialTemperature(fsm);
-        double gamma = getUpdateRate(t);
+        double t = getInitialTemperature(fsm, ff);
 
         double overallBestFitness = currentFitness;
 
 
-
-        while(t>=){
+        double alpha = 1.0;
+        while(alpha >= 0.01){                   // experimental amount... in hope that there arent so big fsms
             int ii = 0; // number of inner iterations
             int accepted = 0;
             while(ii<= nIterations){
@@ -63,6 +62,9 @@ public class simulatedAnnealing {
                 List<Cluster> sNew = mutator.mutate(sCurr);
                 double newFitness = ff.getFitness(sNew);
                 double deltaFitness = newFitness - currentFitness;
+                if(newFitness==0.0){
+                    continue;
+                }
                 if(deltaFitness>0){
                     sCurr = sNew;
                     currentFitness = newFitness;
@@ -78,7 +80,7 @@ public class simulatedAnnealing {
                     bestClusteringSolution = sCurr;
                 }
             }
-            double alpha = (double)(accepted/ii);
+             alpha = (double)(accepted/ii);
             t = updateTemperature(alpha, t);
         }
         // finished; set best solution as return value
@@ -115,10 +117,6 @@ public class simulatedAnnealing {
         return 20*sDev;
     }
 
-    private double getUpdateRate(double tCurrent){
-
-    }
-
     /**
      * Updates the temperature according to table.
      *
@@ -131,6 +129,6 @@ public class simulatedAnnealing {
         if (alpha>=0.96) return 0.5*tCurr;
         else if (0.8<=alpha && alpha <0.96) return 0.9*tCurr;
         else if(0.15<=alpha && alpha<0.8) return 0.95*tCurr;
-        else
+        else return 0.8*tCurr;
     }
 }
