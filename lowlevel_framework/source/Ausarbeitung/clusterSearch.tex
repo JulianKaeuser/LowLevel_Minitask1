@@ -1,0 +1,122 @@
+\chapter{Introduction}
+\label{cha:introduction}
+
+
+
+
+
+\section{Cluster Search}
+\label{sec:clusterSearch}
+
+In order to encode the states cluster-wise, a good partition into clusters must be found. In the following, the criteria for well-formed 
+clusters concerning the previously presented encoding strategy are described.
+
+\subsubsection{Available LUT Inputs}
+\label{subsubsec:LUTInputs}
+In any case, each cluster must fit into one slice respectively lookup table. Therefore, all inputs and necessary signals for the state 
+transitions inside the cluster and from other clusters must be fed to the LUT inputs. The amount of signals is calculated as shown in eqn. 
+\label{eqn:formula}. One input is occupied for the cluster's own active bit; the states inside the cluster are encoded binarily, therefore 
+$ld(\text{number of states})$ bits are needed for the states. From the external inputs, each bit which is not a shared dc (here called external inputs that care) in any of the contained
+transitions must be fed into the LUT inputs. At last, each other cluster's input which is associated with any of the contained states must 
+be considered as one input. All of these conditions must be met simultaneously.
+
+\begin{center}
+\begin{eqnarray}
+n_{ExternalInputsThatCare} + \\
+n_{incomingInterClusterTransitions} + \\
+log_2(n_{statesInCluster}) + \\
+1\vspace{1cm}\\
+<= N_{LUT-inputs}\
+\end{eqnarray}
+\end{center}
+
+
+Since the clustering problem is a combinatorial one, especially for large state machines, no ideal clusters can be searched. A heuristical 
+approach is necessary. In this project, the application of a simulated annealing has been chosen because of its well-known effectiveness in
+hardware synthesis and the problem-independent implementation. The problem reduces to finding a suitable fitness function and mutation scheme.
+Due to the timed scope of this project, no further tuning of the other parameters like starting and end temperature could be included. Both 
+fitness function and the mutation scheme are described in the next chapter.
+
+\chapter{Simulated Annealing}
+\label{cha:SimulateAnnealing}
+
+\subsubsection{Simulated Annealing Algorithm}
+\label{subsubsec:SAAlgorithm}
+
+% something about the parameters used
+%startingTemperature: 20*s shittyfuck
+% innerNumber = 1.0
+% TemperatureVariation = table(alpha)
+% N = number of states
+
+
+\subsubsection{Fitness Function}
+\label{subsubsec:FitnessFunction}
+
+\subsubsection{Mutation}
+\label{subsubsec:Mutation}
+
+
+
+\chapter{Evaluation}
+\label{cha:Evaluation}
+
+In this chapter, a look on the output files and the quality of the cluster-wise state encoding is taken.
+
+\subsubsection{BLIF Format as Output}
+\label{subsubsec:BLIFOutput}
+
+The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
+Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
+
+\subsubsection{Achievements}
+\label{subsubsec:Achievements}
+
+The presented method is capable of parsing .kiss2 files describing the behaviour of finite state machines, finding clusters of the included states
+according to an optimization towards their mapping to FPGA lookup tables and assigning codes to these found clusters. The results are written back into a .blif file containing the logical description and the codes for each cluster and state. Clusters are determined so that the logic associated with each of them fits into one lookup table. In the scope of this project, some parameter restrictions had to be assumed. The amount of inputs for available LUTs was assumed as 8, which is a possible input count in modern FPGA series. For thenumber of external inputs of the finite state machine, the soft limit of 4 is used. This value has been chosen so that the limitations for one cluster can be ensured; nevertheless, larger input counts may work depending on the amount of significant (i.e. non-don't-care) bits in the input vectors.
+
+\subsubsection{Results}
+\label{subsubsec:Results}
+
+The resulting logic circuits implementing the assigned codes have been fed into the ABC logic synthesis tool. As parameters, an 8-input LUT .lib description and \texttt{fpga -v; print\_stats} have been used.
+
+%% some results here
+
+
+
+\section{Formating of the Clusters}
+\label{subsubsec:format_clusters}
+
+The goal of our task is to optimize the representation of state machines within an FPGA.
+To do so we try to sort as many states as possible into clusters. Each cluster represented an binary state machines that can be implemented in just one look-up-table of an FPGA. 
+Mathematically speaking we try to minimize the number of clusters that can fulfill the following equation:
+
+$ N<N_(max) wobei N = #Cluster_Inputs + ld(#Zustände) + Cluster_Bits  $
+
+Any cluster that can not fulfill this equation or constrains only one state hast to be one-hot encoded. 
+
+In order to sort the different states into clusters we tried multiple approaches. Our first approach sorted all states into separate clusters and tried to combine them if possible. This resulted in an bad solution due to the problem that a cluster usually can not expanded by just one node, due to the cluster\_input constrains. However that cluster might be still expandable if multiple nodes (which referenz each other) are sorted into the cluster. In other words, an local minimum is limiting this approach.
+This finding lead to a second approach which tries to find clusters which have an relation which each other. To do so the algorithm takes each cluster once and determines the predecessors of that cluster by following the outgoing transitions.
+These predecessors are now ordered by the number of different other ingoing transitions they have. After the ordering the algorithm tries to merge the clusters. In case that merging would violate the N-equation the cluster with the lowest order is thrown away. 
+
+Due to the nature of the . Since 
+Since the nature was unkown an simulate with multiple itteration
+
+\subsection{Simulated Annealing}
+\label{subsubsec:format_clusters}
+
+
+\subsection{Mutation Algorithm}
+\label{subsubsec:format_clusters}
+
+In oder to find a good solution we have to mutate
+The mutation algorithm mutates the cluster-set a variable number of times.
+During each mutation an random state is extracted from its cluster and assigned to an random other cluster. Clusters how reach zero states are deleted. \\
+In order to bypass the problem with the local minima it is likely that the same cluster is assigned multiple states.\\
+If multiple mutation are made there is a probability of 25\,\% that the same cluster is chosen again. Each time the cluster is chosen again this probability is lowered by 5\,\%.
+
+
+
+
+
+
