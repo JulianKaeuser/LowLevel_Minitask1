@@ -1,0 +1,84 @@
+\documentclass[parskip,
+							 oneside,
+% 							 longdoc,
+							 11pt,
+							 noheadingspace,
+							 accentcolor=tud1d,
+							 bigchapter,
+							 %draft,
+							 colorback]{tudreport}
+
+
+%% Spracheinstellungen
+\usepackage[ngerman]{babel}
+%\usepackage[applemac]{inputenc} % Input-Encodung: applemac fuer Mac
+%\IfFileExists{latin1.sty}{\usepackage{latin1}}{\usepackage{isolatin1}}
+%\usepackage[latin1]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[ansinew]{inputenc}  % Input-Encodung: ansinew fuer Windows
+\usepackage{microtype} % optischer Randausgleich bei pdflatex mit Zeichendehnung
+
+%% Grafikeinstellungen
+\usepackage{float} % u.a. genaue Plazierung von Gleitobjekten mit H
+%\usepackage[latin1]{inputenc}
+
+
+%% Tabelleneinstellungen
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+%% State Chart
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+
+%% Mathematik
+\usepackage{amsmath}
+\usepackage{nicefrac}
+\usepackage{icomma}
+
+%% sonstige Einstellungen
+\usepackage{paralist}% erweiterte Listenumgebung (z.B. compactitem)
+\usepackage{textcomp} % verschiedene Symbole
+\usepackage[nottoc, numbib]{tocbibind}
+\usepackage{hyperref}
+\renewcommand\plparsep{1ex}
+\usepackage{enumerate}
+
+
+\title{\textbf{Cluster-wise State Encoding}}
+\subtitle{Mini Task Report}
+\subsubtitle{Supervisor: Dennis Wolf M.Sc.\\
+			 Start: 05/11/2017 \textbar\ Submission: 06/14/2017\\
+			 Institute for Computer Engineering\hfill\textbar\hfill Computer Systems Group\hfill\textbar\hfill Prof.\,Dr.-Ing.\, Christian Hochberger}
+\setinstitutionlogo{images/logo.pdf}
+% \institution{Institut f\"ur Datentechnik\hfill\textbar\hfill Fachgebiet Rechnersysteme\hfill\textbar\hfill Prof.\,Dr.-Ing.\, Hans Eveking}
+%\settitlepicture{images/spartan}
+\begin{document}
+
+%% Titel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+\cleardoublepage
+
+%% Vorgeplnkel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{empty}
+%\pagenumbering{roman}
+
+
+%% Hauptteil %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{headings}
+\pagenumbering{arabic}
+\include{clusterSearch}
+
+
+%% Anhang %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\appendix
+\bibliographystyle{plain}
+\clearpage
+% \nocite{*}
+\bibliography{literaturverzeichnis}
+
+
+\end{document}
