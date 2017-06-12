@@ -20,7 +20,7 @@ public class State{
 	private List<Long> inputs = new ArrayList<Long>();
 	private Map<Long, Long> outputMap = new HashMap<Long, Long>();
 
-	private Cluster cluster=null;
+//	private Cluster cluster=null;
 
 	public State(){
 		this.stateName="Name NOT set!";
@@ -40,14 +40,14 @@ public class State{
 		return myStates;
 	}
 
-	public Cluster getCluster(){
+/*	public Cluster getCluster(){
 	    return this.cluster;
     }
 
     public void setCluster(Cluster cluster){
 	    this.cluster = cluster;
     }
-
+*/
 	public String getName(){
 		return this.stateName;
 	}

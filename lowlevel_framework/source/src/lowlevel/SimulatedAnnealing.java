@@ -57,15 +57,15 @@ public class SimulatedAnnealing {
 
         double alpha = 1.0;
         while(t > 0.01){                   // experimental amount... in hope that there arent so big fsms
-            System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
+         //   System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
             int ii = 0; // number of inner iterations
             int accepted = 0;
             while(ii<= nIterations){
-                System.out.println("[SA] innerIteration #"+ ii);
+            //    System.out.println("[SA] innerIteration #"+ ii);
                 ii++;
                 List<Cluster> sNew = mutator.mutateClusters(sCurr, numOperations);
                 double newFitness = ff.getFitness(sNew);
-                System.out.println("[SA] newFitness = "+newFitness);
+            //    System.out.println("[SA] newFitness = "+newFitness);
                 double deltaFitness = newFitness - currentFitness;
                 if(newFitness==0.0){
                     continue;
@@ -85,7 +85,7 @@ public class SimulatedAnnealing {
                     bestClusteringSolution = sCurr;
                     bestClusteringSolutionStored = storeClustering(sCurr);
                 }
-                System.out.println("[SA] current Fitness = "+ overallBestFitness);
+            //    System.out.println("[SA] current Fitness = "+ overallBestFitness);
             }
              alpha = (double)(accepted/ii);
             t = updateTemperature(alpha, t);

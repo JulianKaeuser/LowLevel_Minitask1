@@ -74,7 +74,7 @@ public class Cluster{
         }
 
         //und einfügen
-        newState.setCluster(this);
+    //    newState.setCluster(this);
         states.add(newState);
     }
 
@@ -91,7 +91,7 @@ public class Cluster{
                 iter.remove();
             }
         }
-        state.setCluster(null);
+    //    state.setCluster(null);
         states.remove(state);
     }
 
