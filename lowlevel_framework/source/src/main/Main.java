@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -74,40 +75,17 @@ public class Main {
 
 			
 			// TODO - here you go
-			/*
-			for(int i=0;i<fsm.getStates().length;i++){
-				System.out.println("State: "+fsm.getStates()[i].getName());
-				for(StateTransition aTras : fsm.getStates()[i].getOutgoingTransitions()){
-					System.out.println("Transition to: "+aTras.getTarget().getName());
-
-				}
-			}*/
-
-
-		//	fsm.getStates()[0].getOutgoingTransitions();
-
-		//	StateMachine myStateMachine = new StateMachine(fsm);
-		/*	for(State aState : fsm.getStates()){
-				myStateMachine.addState(aState);
-			} */
-		//	Transition.getNumberOfBitsThatCare(myStateMachine.getTransitions());
-		//	myStateMachine.combineClusters(5);
-		//	myStateMachine.doClustering(8);
-		//	myStateMachine.debugPrintClusters();
-			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
-
-			// here the output file of the state machine should be printed
-			/*
-			ClusterEncoder.assignClusterCodes(myStateMachine);
-			for (Cluster cluster : myStateMachine.getClusters()){
-				ClusterEncoder.encodeCluster(cluster, Encoding.BINARY);
-			}
-			StateMachineWriter.writeFSM(myStateMachine, System.lineSeparator()+"output");
-			*/
 			System.out.println(" starting Simulated Annealing");
 			SimulatedAnnealing sa = new SimulatedAnnealing();
 			ClusterFitnessFunction ff = new ClusterFitnessFunction(fsm.getNumInputs());
 			List<Cluster> result = sa.findClustering(fsm, ff, 1);
+
+			StateMachine ourFSM = new StateMachine();
+			ourFSM.name = args[0];
+			ourFSM.addClusteredList(result);
+			ourFSM.assignCodes();
+			printCodes(ourFSM);
+
 			printClusterList(result);
 
 		}
@@ -148,6 +126,19 @@ public class Main {
 				System.out.print("[Main]      state "+state.getName()+ "; ");
 				if (!states.add(state)) System.out.print(" double");
 				System.out.println("");
+			}
+		}
+
+	}
+
+	public static void printCodes(StateMachine fsm){
+		Map<Cluster, String> clusterCodes = fsm.getClusterCodes();
+		Map<State, String> stateCodes = fsm.getStateCodes();
+
+		for (Cluster cl : clusterCodes.keySet()){
+			System.out.println("[Main:printCodes] Cluster: "+cl.getName()+ "; code: "+clusterCodes.get(cl));
+			for (State state : cl.getStates()){
+				System.out.println("  state: "+state.getName()+ "; code: "+ stateCodes.get(state));
 			}
 		}
 
