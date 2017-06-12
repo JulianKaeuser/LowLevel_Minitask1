@@ -7,6 +7,9 @@ import lowlevel.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Main class
@@ -83,13 +86,13 @@ public class Main {
 
 		//	fsm.getStates()[0].getOutgoingTransitions();
 
-			StateMachine myStateMachine = new StateMachine(fsm);
+		//	StateMachine myStateMachine = new StateMachine(fsm);
 		/*	for(State aState : fsm.getStates()){
 				myStateMachine.addState(aState);
 			} */
 		//	Transition.getNumberOfBitsThatCare(myStateMachine.getTransitions());
 		//	myStateMachine.combineClusters(5);
-			myStateMachine.doClustering(8);
+		//	myStateMachine.doClustering(8);
 		//	myStateMachine.debugPrintClusters();
 			//myCluster.addState(fsm.getStates()[0]); //DAS kommentar !!!
 
@@ -101,10 +104,17 @@ public class Main {
 			}
 			StateMachineWriter.writeFSM(myStateMachine, System.lineSeparator()+"output");
 			*/
+			System.out.println(" starting Simulated Annealing");
+			SimulatedAnnealing sa = new SimulatedAnnealing();
+			ClusterFitnessFunction ff = new ClusterFitnessFunction();
+			List<Cluster> result = sa.findClustering(fsm, ff, 1);
+			printClusterList(result);
+
 		}
 		else{
 			System.out.println("No input argument given");
 		}
+		/*
 		System.out.println("Beginning Automation");
 		String[] params = {};
 		AutomaticEvaluator aut = new AutomaticEvaluator();
@@ -113,5 +123,33 @@ public class Main {
 		aut.setOutputPath(userDir+"\\abc_output");
 		System.out.println(userDir);
 		aut.automatedAnalysis(userDir, params);
+		*/
+	}
+
+
+	public static void printClusterList(List<Cluster> list){
+		int numStates = 0;
+		for (Cluster cl : list){
+			numStates += cl.getNumberOfStates();
+		}
+		System.out.println("[Main:printClusterList] printing new list with "+ numStates + " states, "+list.size()+" clusters");
+		int ii=0;
+		for (Cluster cl : list){
+			System.out.println("[Main] Cluster "+ ii+ "; states: "+ cl.getStates().size()+ "; N: "+cl.getN()+ "; InTrans: "+ cl.getIncomingInterClusterTransitions().size());
+			ii++;
+		}
+		System.out.println("[Main]____states:_______");
+		ii=0;
+		Set<State> states = new HashSet<State>();
+		for (Cluster cl : list){
+			System.out.println("[Main] Cluster "+ ii);
+			ii++;
+			for (State state : cl.getStates()){
+				System.out.print("[Main]      state "+state.getName()+ "; ");
+				if (!states.add(state)) System.out.print(" double");
+				System.out.println("");
+			}
+		}
+
 	}
 }

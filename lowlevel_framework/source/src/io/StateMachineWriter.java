@@ -49,7 +49,7 @@ public class StateMachineWriter {
 
         // create a commentary section with states and their codes/cluisters and their codes
 
-        bld.append(getSymbolicCodes(fsm));
+       // bld.append(getSymbolicCodes(fsm));
         /*todo: format
         .latch next_state state re clk 0;
 
@@ -64,7 +64,7 @@ public class StateMachineWriter {
 
 
 
-        // print codes of states
+        /* print codes of states
         for (Cluster cluster : fsm.getClusters()){
             for (State state : cluster.getStateArray()){
                 int offset = getClusterOffset(latches, cluster);
@@ -72,6 +72,7 @@ public class StateMachineWriter {
                 bld.append(".code "+state.getName()+" "+cluster.getCode()+getStateCode(offset, latches.length, stateCode) +"\n");
             }
         }
+        */
 
         bld.append(".end");
         destination = (destination.endsWith(System.lineSeparator())) ? destination : (destination + System.lineSeparator());
@@ -250,8 +251,9 @@ public class StateMachineWriter {
 
         for (Cluster cluster : fsm.getClusters()){
             for (State state : cluster.getStates()){
-                bld.append("# "+ state.getName()+ " ")
+                bld.append("# "+ state.getName()+ " ");
             }
         }
+        return bld.toString();
     }
 }

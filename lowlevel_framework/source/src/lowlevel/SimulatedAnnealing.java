@@ -1,7 +1,6 @@
 package lowlevel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Julian Käuser on 11.06.2017.
@@ -39,28 +38,34 @@ public class SimulatedAnnealing {
      * @return A List of clusters which have been found as near optimal. Each Cluster in this list will
      * have a the correct states included.
      */
-    public List<Cluster> findClustering(ParsedFile fsm, ClusterFitnessFunction ff){
+    public List<Cluster> findClustering(ParsedFile fsm, ClusterFitnessFunction ff, int numOperations){
         List<Cluster> bestClusteringSolution = new ArrayList<Cluster>();
+        Map<Cluster, Set<State>> bestClusteringSolutionStored = storeClustering(bestClusteringSolution);
+        setMutator();
 
         List<Cluster> sCurr = mutator.getInitialS(fsm);
+        bestClusteringSolution = sCurr;
         double currentFitness = ff.getFitness(sCurr);
 
         // we have N=numStates elements to alter
         double nIterations = Math.pow(innerNumber, (4/3))* fsm.getNum_states();
 
-        double t = getInitialTemperature(fsm, ff);
+        double t = getInitialTemperature(fsm, ff, numOperations);
 
         double overallBestFitness = currentFitness;
 
 
         double alpha = 1.0;
         while(alpha >= 0.01){                   // experimental amount... in hope that there arent so big fsms
+            System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
             int ii = 0; // number of inner iterations
             int accepted = 0;
             while(ii<= nIterations){
+                System.out.println("[SA] innerIteration #"+ ii);
                 ii++;
-                List<Cluster> sNew = mutator.mutatedClusters(sCurr, 199999999, 8);
+                List<Cluster> sNew = mutator.mutateClusters(sCurr, numOperations);
                 double newFitness = ff.getFitness(sNew);
+                System.out.println("[SA] newFitness = "+newFitness);
                 double deltaFitness = newFitness - currentFitness;
                 if(newFitness==0.0){
                     continue;
@@ -78,7 +83,9 @@ public class SimulatedAnnealing {
                 if (currentFitness>=overallBestFitness){
                     overallBestFitness = currentFitness;
                     bestClusteringSolution = sCurr;
+                    bestClusteringSolutionStored = storeClustering(sCurr);
                 }
+                System.out.println("[SA] current Fitness = "+ overallBestFitness);
             }
              alpha = (double)(accepted/ii);
             t = updateTemperature(alpha, t);
@@ -86,23 +93,23 @@ public class SimulatedAnnealing {
         // finished; set best solution as return value
 
 
-        return bestClusteringSolution;
+        return restoreClustering(bestClusteringSolutionStored);
     }
 
     /**
      * Returns the initial temperature...
      * @return 20*standard deviation of #numStates random changes fitness difference
      */
-    private double getInitialTemperature(ParsedFile fsm, ClusterFitnessFunction ff){
+    private double getInitialTemperature(ParsedFile fsm, ClusterFitnessFunction ff, int numOperations){
         int n = fsm.getNum_states();
         double sDev = 0.0;
         double[] fitnesses = new double[n];
         List<Cluster> list = mutator.getInitialS(fsm);
-        list = mutator.mutatedClusters(list, 19999090, 8);
+        list = mutator.mutateClusters(list, numOperations);
         double currentFitness = ff.getFitness(list);
         double mean = 0.0;
         for (int ii= 0; ii<n; ii++){
-            double newFitness = ff.getFitness(mutator.mutatedClusters(list, 1999090, 8));
+            double newFitness = ff.getFitness(mutator.mutateClusters(list, numOperations));
             fitnesses[ii] = currentFitness - newFitness;
             currentFitness = newFitness;
             mean += fitnesses[ii];
@@ -133,4 +140,43 @@ public class SimulatedAnnealing {
     }
 
     ///kommi zum commiten
+
+    /**
+     * Restores the stored clustering
+     * @param map
+     * @return
+     */
+    private List<Cluster> restoreClustering(Map<Cluster, Set<State>> map){
+        List<Cluster> list = new ArrayList<Cluster>();
+        for (Cluster cluster : map.keySet()){
+            list.add(cluster);
+            List<State> toREmove = new ArrayList<State>();
+            for (State st : cluster.getStates()) {
+                toREmove.add(st);
+            }
+            for (State st : toREmove) {
+                cluster.removeState(st);
+            }
+            for(State st : map.get(cluster)){
+                cluster.addState(st);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Stores a clustering (i.e. mapping of states to clusters) in a map
+     * @param list the clustering to store
+     * @return a map
+     */
+    private Map<Cluster, Set<State>> storeClustering(List<Cluster> list){
+
+        Map<Cluster, Set<State>> map = new HashMap<Cluster, Set<State>>();
+        for (Cluster cluster : list){
+            Set<State> states = new HashSet<State>();
+            states.addAll(cluster.getStates());
+            map.put(cluster, states);
+        }
+        return map;
+    }
 }

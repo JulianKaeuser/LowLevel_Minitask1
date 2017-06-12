@@ -21,6 +21,15 @@ public class ClusterMutator {
 
             initialList.add(nC);
         }
+        System.out.println("[initial Clustering:]");
+        int ii=0;
+        for (Cluster cl : initialList){
+            System.out.print("Cluster "+ ii+ "; ");
+            for (State st : cl.getStates()){
+                System.out.println(st.getName());
+            }
+            ii++;
+        }
 
         return initialList;
     }
