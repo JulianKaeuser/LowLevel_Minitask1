@@ -131,12 +131,18 @@ public class Main {
 
 	}
 
+	/**
+	 * Prints the codes of the given fsm to the console
+	 * @param fsm
+	 */
 	public static void printCodes(StateMachine fsm){
 		Map<Cluster, String> clusterCodes = fsm.getClusterCodes();
 		Map<State, String> stateCodes = fsm.getStateCodes();
 
+		int ii=0;
 		for (Cluster cl : clusterCodes.keySet()){
-			System.out.println("[Main:printCodes] Cluster: "+cl.getName()+ "; code: "+clusterCodes.get(cl));
+			System.out.println("[Main:printCodes] Cluster: "+ii+ "; code: "+clusterCodes.get(cl));
+			ii++;
 			for (State state : cl.getStates()){
 				System.out.println("  state: "+state.getName()+ "; code: "+ stateCodes.get(state));
 			}

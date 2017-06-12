@@ -42,7 +42,7 @@ public class StateMachineWriter {
 
         //in and outputs for the _logic_ model
         bld.append(buildInputs(fsm)); // correct for BLIF
-        bld.append(buildOutputs(fsm)); // COrrect for BLIF
+        bld.append(buildOutputs(fsm)); // Correct for BLIF
 
         bld.append(".m "+ fsm.getNumStates()+" \n"); // is that correct?
         bld.append(".clock clk\n"); // correct for BLIF
@@ -55,28 +55,18 @@ public class StateMachineWriter {
 
         */
 
-
-        // build functional description of fsm (which actually exists with the input file...
-
-
         bld.append("\n");
 
 
 
 
         /* print codes of states
-        for (Cluster cluster : fsm.getClusters()){
-            for (State state : cluster.getStateArray()){
-                int offset = getClusterOffset(latches, cluster);
-                String stateCode = getStateCodeFromLong(state.getCode());
-                bld.append(".code "+state.getName()+" "+cluster.getCode()+getStateCode(offset, latches.length, stateCode) +"\n");
-            }
-        }
+
         */
 
         bld.append(".end");
         destination = (destination.endsWith(System.lineSeparator())) ? destination : (destination + System.lineSeparator());
-        destination += fsm.name+"_clusterEncoded.kiss2";
+        destination += fsm.name+"_clusterEncoded.blif";
 
         try (FileWriter out = new FileWriter(destination)) {
             BufferedWriter buf = new BufferedWriter(out);
