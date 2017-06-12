@@ -9,13 +9,16 @@ import java.util.List;
 public class ClusterFitnessFunction {
 
     public int nLut;
+    public int numInputs;
 
-    public ClusterFitnessFunction(int n){
+    public ClusterFitnessFunction(int n, int numInputs){
         this.nLut = n;
+        this.numInputs = numInputs;
     }
 
-    public ClusterFitnessFunction(){
+    public ClusterFitnessFunction(int numInputs){
         nLut=8;
+        this.numInputs=numInputs;
     }
 
     public double getFitness(List<Cluster> sCurr){
@@ -39,7 +42,7 @@ public class ClusterFitnessFunction {
         int reduction = numStatesTotal-sCurr.size();
         fitness = (double) reduction;
 
-        return fitness;
+        return fitness+1;
     }
 
     /**
@@ -50,11 +53,14 @@ public class ClusterFitnessFunction {
     private int getNumInputsThatCare (Cluster cl){
         int inputsThatCare = 0;
         List<Long> inputs = new ArrayList<Long>();
+
+
         for (State state : cl.getStates()){
             for (Transition trans : state.getIncomingTransitions()){
                 inputs.add(trans.getInput());
             }
         }
+
         return getNumberBitsThatCare(inputs);
 
     }
@@ -74,11 +80,11 @@ public class ClusterFitnessFunction {
         for (Long in : inputs){
             tmp |= ~in.longValue();
         }
-        for (int ii=0; ii<Long.bitCount(tmp); ii+=2){
+        for (int ii=0; ii<numInputs*2; ii+=2){
             long cmp = 0x3 << ii;
             cmp = ~cmp;
             long tmp2 = (tmp | cmp);
-            if (cmp==tmp2){
+            if (cmp!=tmp2){
                 result++;
             }
         }

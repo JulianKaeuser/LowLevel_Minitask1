@@ -106,7 +106,7 @@ public class Main {
 			*/
 			System.out.println(" starting Simulated Annealing");
 			SimulatedAnnealing sa = new SimulatedAnnealing();
-			ClusterFitnessFunction ff = new ClusterFitnessFunction();
+			ClusterFitnessFunction ff = new ClusterFitnessFunction(fsm.getNumInputs());
 			List<Cluster> result = sa.findClustering(fsm, ff, 1);
 			printClusterList(result);
 

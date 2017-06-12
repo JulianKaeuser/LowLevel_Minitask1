@@ -56,7 +56,7 @@ public class SimulatedAnnealing {
 
 
         double alpha = 1.0;
-        while(alpha >= 0.01){                   // experimental amount... in hope that there arent so big fsms
+        while(t > 0.01){                   // experimental amount... in hope that there arent so big fsms
             System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
             int ii = 0; // number of inner iterations
             int accepted = 0;
@@ -150,11 +150,11 @@ public class SimulatedAnnealing {
         List<Cluster> list = new ArrayList<Cluster>();
         for (Cluster cluster : map.keySet()){
             list.add(cluster);
-            List<State> toREmove = new ArrayList<State>();
+            List<State> toRemove = new ArrayList<State>();
             for (State st : cluster.getStates()) {
-                toREmove.add(st);
+                toRemove.add(st);
             }
-            for (State st : toREmove) {
+            for (State st : toRemove) {
                 cluster.removeState(st);
             }
             for(State st : map.get(cluster)){
