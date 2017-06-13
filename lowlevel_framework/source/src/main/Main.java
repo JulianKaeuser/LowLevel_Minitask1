@@ -62,7 +62,7 @@ public class Main {
 						best_result=result;
 					}
 				}
-				saveClusterBenchmark(file_name, best_result, clusterBefore, fsm.getNumOutputs());
+				saveClusterBenchmarkBasic(file_name, best_result, clusterBefore, fsm.getNumOutputs());
 
 				//if()
 			//	printClusterList(clusterBefore);
@@ -174,6 +174,13 @@ public class Main {
 	public static void openClusterBenchmakrFile() {
 		String text = "Algorithm,LUT All-One-Hot,LUT Cluster,FF All-One-Hot,FF Cluster";
 		try {
+			String relPath = "\\lowlevel_framework\\benchmarks\\kiss_files\\";
+			String userDir = System.getProperty("user.dir");
+			String path = userDir+relPath;
+
+			String filePath = path+"output.csv";
+			File exist = new File(filePath);
+			if (exist.exists()) exist.delete();
 			writeIntoBenchmakrFile(text);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -222,6 +229,41 @@ public class Main {
 		text+=",";
 
 		int clusterFF = ff_sorted+outputs;
+		text+= clusterFF; 					//FF Cluster
+
+
+		try {
+			writeIntoBenchmakrFile(text);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveClusterBenchmarkBasic(String algoName, List<Cluster> sorted_clusters, List<Cluster> unsorted_clusters, int outputs){
+
+		int ff_sorted=0;
+		for(Cluster c:sorted_clusters){
+			ff_sorted+=(Math.log(c.getNumberOfStates())/Math.log(2))+1; //ld(states) in 1 cluster
+			//ff_sorted+=c.getOutgoingInterClusterTransitions().size();
+		}
+
+		String text="";
+		text+=algoName;
+		text+=",";
+
+		int allOneHotLUT = unsorted_clusters.size();
+		text+=allOneHotLUT;  //LUT All-One-Hot column
+		text+=",";
+
+		int lutCluster = sorted_clusters.size(); //LUT Cluster
+		text+=lutCluster;
+		text+=",";
+
+		int allOneHotFF = unsorted_clusters.size()*2;
+		text+=allOneHotFF;					// FF All-One-Hot
+		text+=",";
+
+		int clusterFF = ff_sorted;
 		text+= clusterFF; 					//FF Cluster
 
 
