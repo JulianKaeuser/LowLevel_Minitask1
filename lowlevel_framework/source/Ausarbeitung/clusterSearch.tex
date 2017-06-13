@@ -131,10 +131,35 @@ If multiple mutations are performed on one clustering, there is a probability of
 \chapter{Evaluation}
 \label{cha:Evaluation}
 
-In this chapter, a look on the output files and the quality of the cluster-wise state encoding is taken.
-
+This chapter evaluates the quality of the cluster-based state encoding.
 \subsubsection{BLIF Format as Output}
 \label{subsubsec:BLIFOutput}
+
+NEU SCHREIBEN WEIL IST NICHT
+Initial we choose BLIF as our format of choice to encode the different state machines. While the encoding process itself is functional the ABC parsers additionaly needs XYZ.
+Due to time constrains we were not able to parse our state machines into the ABC parser. Instead we choose to estimate the number of LUT and FF based on the structure of the FSM.
+
+\subsubsection{Ideal Results}
+\label{subsubsec:IResults}
+
+The following diagram shows the number of lookup-tables and Flip Flops that is minimal needed to encode the states machines. This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state. This model excludes all additional lookup-tables needed for transition purposes.
+
+
+\subsubsection{Practical Results}
+\label{subsubsec:PResults}
+
+In order to actually implement the state machines additional lookup-tables to represent the transtion logic are needed. 
+Due to the fact that XYZ we need additional XXX.
+The following
+
+
+\subsubsection{Conclusion}
+\label{subsubsec:Conclusion}
+
+While the numbers of our initial ideal model showed promises .
+While did not had the time to validated we believe that We hope that we can validate our work with BILF within the next weeks but 
+
+
 
 The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
 Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
@@ -144,50 +169,3 @@ Additionally, the input files describing state machines in the scope of this pro
 
 The presented method is capable of parsing .kiss2 files describing the behaviour of finite state machines, finding clusters of the included states
 according to an optimization towards their mapping to FPGA lookup tables and assigning codes to these found clusters. The results are written back into a .blif file containing the logical description and the codes for each cluster and state. Clusters are determined so that the logic associated with each of them fits into one lookup table. In the scope of this project, some parameter restrictions had to be assumed. The amount of inputs for available LUTs was assumed as 8, which is a possible input count in modern FPGA series. For thenumber of external inputs of the finite state machine, the soft limit of 4 is used. This value has been chosen so that the limitations for one cluster can be ensured; nevertheless, larger input counts may work depending on the amount of significant (i.e. non-don't-care) bits in the input vectors.
-
-\subsubsection{Results}
-\label{subsubsec:Results}
-
-The resulting logic circuits implementing the assigned codes have been fed into the ABC logic synthesis tool. As parameters, an 8-input LUT .lib description and \texttt{fpga -v; print\_stats} have been used.
-
-%% some results here
-
-
-
-%\section{Formating of the Clusters}
-%\label{subsubsec:format_clusters}
-
-%The goal of our task is to optimize the representation of state machines within an FPGA.
-%%To do so we try to sort as many states as possible into clusters. Each cluster represented an binary state machines that can be implemented in just one look-up-table of an FPGA.
-%Mathematically speaking we try to minimize the number of clusters that can fulfill the following equation:
-
-% %$ N<N_(max) wobei N = \#Incoming\_Cluster\_Inputs + ld(\#Zustände) + \#input\_Bits\_That\_Care  $
-
-%Where $ \#Incoming\_Cluster\_Inputs $ specifies the number of
-%Any cluster that can not fulfill this equation or constrains only one state hast to be one-hot encoded.
-
-
-
-%Due to the nature of the . Since
-%Since the nature was unkown an simulate with multiple itteration
-
-%\subsection{Simulated Annealing}
-%\label{subsubsec:format_clusters}
-
-
-%\subsection{Mutation Algorithm}
-%\label{subsubsec:format_clusters}
-
-%In oder to find a good solution we have to mutate
-%The mutation algorithm mutates the cluster-set a variable number of times.
-%%%During each mutation an random state is extracted from its cluster and assigned to an random other cluster. Clusters how reach zero states are deleted. \\
-%In order to bypass the problem with the local minima it is likely that the same cluster is assigned multiple states.\\
-%If multiple mutation are made there is a probability of 25\,\% that the same cluster is chosen again. Each time the cluster is chosen again this probability is lowered by 5\,\%.
-
-
-
-
-FÜR STATECHARTPDF:
-
-
-
