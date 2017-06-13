@@ -151,4 +151,38 @@ public class StateMachine {
         return stateCodes;
     }
 
+
+    public void initFlipFlops(){
+        long id = 0;
+        for (Cluster cluster : clusters){
+            cluster.setID(id);
+            FlipFlop isActive = new FlipFlop();
+            isActive.cluster= cluster;
+            isActive.input="next_isActive_Cluster"+id;
+            isActive.output="isActive_Cluster"+id;
+            cluster.setIsActiveFF(isActive);
+
+            int numStateFFs = (int)Math.ceil(Math.log(cluster.getNumberOfStates())/Math.log(2));
+            FlipFlop[] stateFFs = new FlipFlop[numStateFFs];
+            for (int ii=0; ii<stateFFs.length; ii++){
+                FlipFlop stateFF = new FlipFlop();
+                stateFFs[ii]=stateFF;
+                stateFF.cluster=cluster;
+                stateFF.input="next_state_ff_"+ii+"_cluster_"+id;
+                stateFF.output="state_ff_"+ii+"_cluster_"+id;
+            }
+
+            int numOutTrans = cluster.getOutgoingInterClusterTransitions().size();
+            FlipFlop[] outTransFFs = new FlipFlop[numOutTrans];
+            for (int ii=0; ii<outTransFFs.length; ii++){
+                FlipFlop outTransFF = new FlipFlop();
+                outTransFFs[ii]=outTransFF;
+                outTransFF.cluster=cluster;
+                outTransFF.input="next_outTrans_ff_"+ii+"_cluster_"+id;
+                outTransFF.output="outTrans_ff_"+ii+"_cluster_"+id;
+            }
+        }
+
+    }
+
 }

@@ -1,9 +1,6 @@
 package io;
 
-import lowlevel.Cluster;
-import lowlevel.State;
-import lowlevel.StateMachine;
-import lowlevel.Transition;
+import lowlevel.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +9,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,30 +39,165 @@ public class StateMachineWriter {
         bld.append(".model "+fsm.name); // Correct for BLIF
 
         //in and outputs for the _logic_ model
-        bld.append(buildInputs(fsm)); // correct for BLIF
-        bld.append(buildOutputs(fsm)); // Correct for BLIF
+        bld.append(".inputs "+buildInputs(fsm)); // correct for BLIF
+        bld.append(".outputs "+buildOutputs(fsm)); // Correct for BLIF
 
         bld.append(".m "+ fsm.getNumStates()+" \n"); // is that correct?
-        bld.append(".clock clk\n"); // correct for BLIF
+        bld.append(".clock clk\n\n"); // correct for BLIF
 
         // create a commentary section with states and their codes/cluisters and their codes
+        for (Cluster cluster : fsm.getClusterCodes().keySet()){
+            for (State state : fsm.getStateCodes().keySet()){
+                if  (cluster.getStates().contains(state)){
+                    bld.append("# "+ state.getName()+ " "+ fsm.getClusterCodes().get(cluster)+ " "+fsm.getStateCodes().get(state)+"\n");
+                }
+            }
+        }
+        bld.append("# transition section begins\n");
 
-       // bld.append(getSymbolicCodes(fsm));
-        /*todo: format
-        .latch next_state state re clk 0;
+        fsm.initFlipFlops();
+        // all latches in all clusters for transitions
+        Map<Cluster, Map<Transition, FlipFlop>> outTransMap = new HashMap<>();
+        for (Cluster cl : fsm.getClusters()){
+            bld.append(".latch "+cl.getIsActiveFlipFlop().input+ " "+cl.getIsActiveFlipFlop().output+ " re clk 0\n");
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                bld.append(".latch "+ff.input+ " "+ ff.output+ " re clk 0\n");
+            }
+            for (FlipFlop ff : cl.getOutgoingTransFFs()){
+                bld.append(".latch "+ff.input+ " "+ ff.output+ " re clk 0\n");
+            }
+            outTransMap.put(cl, cl.getOutputTransitionOrigins());
+        }
 
-        */
 
+        // write transitions for cluster activeness //tut was es soll
+        for (Cluster cl : fsm.getClusters()){
+            String str = "";
+            int stateBits=0;
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                stateBits++;
+                str += " "+ff.output;
+            }
+            String inInterTrans = "";
+            for (Transition trans : cl.getIncomingInterClusterTransitions()){
+                for (Cluster cl2 : fsm.getClusters()) {
+                    if (cl2.isStateInCluster(trans.getOrigin())){
+                        inInterTrans+= outTransMap.get(cl2).get(trans).output+" ";
+                    }
+                }
+            }
+            // stateBits+inputs+inInterTrans+isActiveSelf+output
+            bld.append(".names"+str+" "+buildInputs(fsm)+" "+inInterTrans+cl.getIsActiveFlipFlop().output+" "+cl.getIsActiveFlipFlop().input+"\n");
+            //input lines which indicate that this cluster is active
+            for (Transition trans : cl.getIncomingInterClusterTransitions()) {
+
+                String stateBitsVector = "";
+                for (int ii = 0; ii < stateBits; ii++) {
+                    stateBitsVector += "-";
+                } ;
+                String inInterTransString = "";
+                int ii=0;
+                for (Transition t2 : cl.getIncomingInterClusterTransitions()){
+                    if (trans.equals(t2)) inInterTransString+="1";
+                    else inInterTransString+="-";
+                }
+                bld.append(stateBitsVector + Helper.longToOutputString(trans.getInput()) +inInterTransString +"0 1\n");
+            }
+
+            for (State state : cl.getStates()){
+                String inInterTransString = "";
+                int ii=0;
+                for (Transition t2 : cl.getIncomingInterClusterTransitions()){
+                    inInterTransString+="-";
+                }
+                for (Transition trans : state.getOutgoingTransitions()){
+                    String stateBitsVector = fsm.getStateCodes().get(state);
+                    String inputs = Helper.longToOutputString(trans.getInput());
+                    if (cl.isStateInCluster(trans.getTarget())){
+                        bld.append(stateBitsVector+inputs+inInterTransString+"1 1\n");
+                    }
+                }
+            }
+            bld.append("\n");
+        }
+
+        //write transitions for each output transition flipflop  // tut was es soll
+        for (Cluster cl : fsm.getClusters()){
+            Map<Transition, FlipFlop> outGoingTransitionFFs = outTransMap.get(cl);
+            String str = "";
+            int stateBits=0;
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                stateBits++;
+                str += " "+ff.output;
+            }
+            for (FlipFlop ff : cl.getOutgoingTransFFs()){
+                // stateBits+inputs+isActive=outgoingTransitionOutput
+                bld.append(".names "+str+" "+buildInputs(fsm)+" "+cl.getIsActiveFlipFlop().output+" "+ff.input+"\n");
+                for(Transition trans : cl.getOutgoingInterClusterTransitions()){
+                    if(outGoingTransitionFFs.get(trans).equals(ff)) {
+                        bld.append(fsm.getStateCodes().get(trans.getOrigin()) + Helper.longToOutputString(trans.getInput()) + "1 1\n");
+                    }
+                }
+                bld.append("\n");
+            }
+        }
+
+        //write transitions for each state bit
+        for (Cluster cl : fsm.getClusters()){
+            String str = "";
+            int stateBits=0;
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                stateBits++;
+                str += " "+ff.output;
+            }
+            String inInterTrans = "";
+            for (Transition trans : cl.getIncomingInterClusterTransitions()){
+                for (Cluster cl2 : fsm.getClusters()) {
+                    if (cl2.isStateInCluster(trans.getOrigin())){
+                        inInterTrans+= outTransMap.get(cl2).get(trans).output+" ";
+                    }
+                }
+            }
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                // stateBits+inputs+inComingTrans+isActive=ffInput
+                bld.append(".names "+str+" "+buildInputs(fsm)+" "+inInterTrans+cl.getIsActiveFlipFlop().output+" "+ff.input+"\n");
+                for (State st : cl.getStates()){
+                    for (Transition trans : st.getIncomingTransitions()){
+                        if (cl.getIncomingInterClusterTransitions().contains(trans)){
+                            // is intercluster, set state bits to dont care
+                            String dcStateBits = "";
+                            for (int ii=0; ii<cl.getStateBitFFs().length; ii++){ dcStateBits+="-";}
+                            bld.append(dcStateBits+Helper.longToOutputString(trans.getInput())+);
+                        }
+                    }
+                }
+            }
+        }
+
+        // write transitions for  todo
+        for (Cluster cl : fsm.getClusters()){
+            String str = "";
+            for (FlipFlop ff : cl.getStateBitFFs()){
+                str += " "+ff.output;
+            }
+            for (Transition trans : cl.getOutgoingInterClusterTransitions()){
+                bld.append(".names"+str+buildInputs(fsm)+" "+cl.getIsActiveFlipFlop().output+"\n");
+                // input lines which indicate that this transition is active
+                String  stateBits = fsm.getStateCodes().get(trans.getOrigin());
+                String transInput = " "+parseBack(trans.getInput());
+                bld.append(stateBits+transInput+" "+cl.getIsActiveFlipFlop().output+"\n");
+            }
+        }
+
+        bld.append("# transition section ending\n#outpout section begin\n");
+
+        /*
+        begin output section
+         */
+
+        bld.append("#output section ending");
+        // end output section
         bld.append("\n");
-
-
-
-
-        /* print codes of states
-
-        */
-
-        bld.append(".end");
         destination = (destination.endsWith(System.lineSeparator())) ? destination : (destination + System.lineSeparator());
         destination += fsm.name+"_clusterEncoded.blif";
 
@@ -78,80 +211,8 @@ public class StateMachineWriter {
         }
     }
 
-    /**
-     * Builds a string which holds the latch order list
-     * @param fsm the modeled state machine
-     * @return a string which has all latches described
-     */
-    private static String[] getLatches(StateMachine fsm){
-        String[] latches = null;
-        if (fsm==null) {
-            latches = new String[1];
-            latches[0] = "";
-            return latches;
-        }
 
-        int actualNumOfLatches = 0;
-        actualNumOfLatches += fsm.getClusters().size(); // number of one-hot encoded clusters +
-        for (Cluster cluster : fsm.getClusters()){
-            actualNumOfLatches += getClusterInternalLatches(cluster).length; //for each cluster, the amount of internal latches
-        }
-        latches = new String[actualNumOfLatches];
-        String[] externalClusterLatches = getExternalClusterLatches(fsm);
-        int ii=0;
-        for (; ii<externalClusterLatches.length; ii++){
-            latches[ii]=externalClusterLatches[ii]; // first n (# of clusters) latches for external cluster one hot
-        }
-        int handled = ii;
-        for (Cluster cluster : fsm.getClusters()){
-            String[] internalClusterLatches = getClusterInternalLatches(cluster);
-            int jj=0;
-            for (; ii<handled+internalClusterLatches.length; ii++){
-                latches[ii] = internalClusterLatches[jj];
-                jj++;
-            }
-            handled=ii;
-        }
-        return latches;
-    }
 
-    /**
-     * Returns a String[] which holds the names of inter-cluster latches
-     * Latches for a cluster are named:
-     *  vCl+ClusterID
-     * for each cluster
-     * @param fsm the modeled StateMachine
-     * @return an String[] if fsm!=null
-     */
-    private static String[] getExternalClusterLatches(StateMachine fsm){
-        String[] latches;
-        Set<Cluster> clusters = fsm.getClusters();
-        latches = new String[clusters.size()];
-        int ii=0;
-        for (Cluster cluster : clusters){
-            latches[ii] = "vCl"+cluster.getID()+ " ";
-        }
-        return latches;
-    }
-
-    /**
-     * Returns an array of names for the intra-cluster necessary latches.
-     * Latches are named:
-     *  vS+ClID+ClusterID+S+ii
-     * where
-     *  ClusterID is the ID of the correspondent cluster and
-     *  ii is the number of the latch
-     * @param cluster The cluster whose internals are modeled
-     * @return a String[] if cluster!=null
-     */
-    private static String[] getClusterInternalLatches(Cluster cluster){
-        String[] latches = new String[cluster.getCode().length()]; // as many latches as bits there are in the code, is it?
-        for (int ii=0; ii<latches.length; ii++){
-            latches[ii]= "vSClID"+cluster.getID()+"S"+ii;
-        }
-        return latches;
-
-    }
 
     /**
      * Returns a string containing all inputs declarations for the blif file, .inputs included
@@ -176,7 +237,7 @@ public class StateMachineWriter {
     private static String buildOutputs(StateMachine fsm){
         String outs = "";
         for (int ii=0; ii<fsm.getNumOutputs(); ii++){
-            outs+=("in"+ii+" ");
+            outs+=("out"+ii+" ");
         }
         return outs;
 
@@ -245,5 +306,57 @@ public class StateMachineWriter {
             }
         }
         return bld.toString();
+    }
+
+    /**
+     * # relevant:
+     * writes the latches associated with the isActive Bit in each cluster
+     * @param bld
+     * @param fsm
+     * @return
+     */
+    public static Map<Cluster, String> writeClusterLatches(StringBuilder bld, StateMachine fsm){
+
+        HashMap<Cluster, String> map = new HashMap<Cluster, String>();
+        int ii=0;
+        for (Cluster cluster : fsm.getClusterCodes().keySet()){
+            bld.append(".latch next_cluster"+ii+ " cluster_"+ii+ " re clk 0\n");
+            map.put(cluster, "cluster_"+ii);
+            ii++;
+        }
+        return map;
+    }
+
+    /**
+     * #relevant
+     * Writes the latches associated with the binary encoding in every cluster
+     * @param bld
+     * @param fsm
+     */
+    public static void writeStateLatches(StringBuilder bld, StateMachine fsm){
+        int ii=0;
+        for (Cluster cluster : fsm.getClusters()){
+            int iiMax = (int)Math.ceil(Math.log(cluster.getNumberOfStates())/Math.log(2));
+            for (; ii<iiMax; ii++) {
+                bld.append(".latch next_cluster" + ii + "StateBit cluster_" + ii + "stateBit re clk 0\n");
+            }
+        }
+    }
+
+    /**
+     * #relevant
+     *
+     * @param bld
+     * @param fsm
+     */
+    public void writeTransitions(StringBuilder bld, StateMachine fsm, Map<Cluster, String> clusterStringMap){
+        int ii= 0;
+        for (Cluster cluster : fsm.getClusters()){
+            bld.append(".names "+)
+        }
+    }
+
+    private static String parseBack(long input){
+        return Helper.longToOutputString(input);
     }
 }

@@ -18,6 +18,11 @@ public class Cluster{
 
     private String name;
 
+    private FlipFlop isActiveFlipFlop;
+    private FlipFlop[] stateBitFFs;
+    private FlipFlop[] outgoingTransFFs;
+    private Map<Transition, FlipFlop> outputTransOrigins;
+
     public Cluster(){
         this.incomingInterClusterTransitions=new ArrayList<Transition>();
         this.outgoingInterClusterTransitions=new ArrayList<Transition>();
@@ -432,4 +437,36 @@ public class Cluster{
     */
 
 
+    public void setIsActiveFF(FlipFlop ff){
+        this.isActiveFlipFlop = ff;
+    }
+
+    public FlipFlop getIsActiveFlipFlop(){
+        return isActiveFlipFlop;
+    }
+
+    public FlipFlop[] getStateBitFFs() {
+        return stateBitFFs;
+    }
+
+    public void setStateBitFFs(FlipFlop[] stateBitFFs) {
+        this.stateBitFFs = stateBitFFs;
+    }
+
+    public FlipFlop[] getOutgoingTransFFs() {
+        return outgoingTransFFs;
+    }
+
+    public void setOutgoingTransFFs(FlipFlop[] outgoingTransFFs) {
+        this.outgoingTransFFs = outgoingTransFFs;
+    }
+
+    public Map<Transition, FlipFlop> getOutputTransitionOrigins(){
+        outputTransOrigins = new HashMap<Transition, FlipFlop>();
+                int ii=0;
+        for (Transition trans : this.getOutgoingInterClusterTransitions()){
+            outputTransOrigins.put(trans, this.getOutgoingTransFFs()[ii]);
+        }
+        return outputTransOrigins;
+    }
 }
