@@ -228,7 +228,7 @@ public class Main {
 		text+=allOneHotFF;					// FF All-One-Hot
 		text+=",";
 
-		int clusterFF = ff_sorted+outputs;
+		int clusterFF = sorted_clusters.size()+ff_sorted;
 		text+= clusterFF; 					//FF Cluster
 
 
@@ -272,6 +272,7 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		//
 	}
 
 	public static void printClusterList(List<Cluster> list){
