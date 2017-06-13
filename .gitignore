@@ -1,5 +1,5 @@
 # intelliJ project stuff
-*.iml
+#*.iml
 
 
 ## Core latex/pdflatex auxiliary files:

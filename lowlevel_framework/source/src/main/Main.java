@@ -62,7 +62,7 @@ public class Main {
 						best_result=result;
 					}
 				}
-				saveClusterBenchmarkBasic(file_name, best_result, clusterBefore, fsm.getNumOutputs());
+				saveClusterBenchmark(file_name, best_result, clusterBefore, fsm.getNumOutputs());
 
 				//if()
 			//	printClusterList(clusterBefore);
@@ -228,7 +228,7 @@ public class Main {
 		text+=allOneHotFF;					// FF All-One-Hot
 		text+=",";
 
-		int clusterFF = ff_sorted+outputs;
+		int clusterFF = sorted_clusters.size()+ff_sorted;
 		text+= clusterFF; 					//FF Cluster
 
 
