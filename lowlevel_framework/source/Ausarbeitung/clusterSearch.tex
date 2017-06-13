@@ -108,8 +108,8 @@ After each outer loop iteration, the temperature is updated according to the cur
 
 \begin{tabbing}
 \hspace{4cm}\=\hspace{4cm}\=\hspace{4cm}\=\kill
- \alpha>=0.96  \>\0.96>=\alpha>0.8 \>0.8>=\alpha>0.15  \> 0.15>=\alpha \\ 
- \gamma=0.5 \>  \gamma=0.9 \>  \gamma=0.95 \> \gamma=0.8
+ $\alpha$ >=0.96  \>0.96>= $\alpha$>0.8 \>0.8>=$\alpha$>0.15  \> 0.15>=$\alpha$ \\ 
+ $\gamma$=0.5 \>  $\gamma$=0.9 \> $\gamma$=0.95 \> $\gamma$=0.8 
 \end{tabbing} 
 \end{itemize}
 
@@ -150,15 +150,29 @@ Due to time constraints we were not able to parse the generated encoding into a 
 \subsubsection{Ideal Results}
 \label{subsubsec:IResults}
 
-The following diagram shows the minimal required amount of lookup-tables and flipflops that is needed to encode the states machines. This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state.It excludes all additional lookup-tables needed for transition purposes.
+The following diagrams \ref{fig:ideal1} and \ref{fig:ideal2} shows the minimal required amount of lookup-tables and flip-flops that is needed to encode the states machines. \\
+With the binary clustering method it is possible to decease the number of lookup-tables by 9.96\,\% and the number of flip flops by 52\,\%.\\
+
+This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state.It excludes all additional lookup-tables needed for transition purposes.
 
 %5 sowas ala man kann sehen, dass man unter dieser annahme schnell ein akzeptables encoding findet.
-
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=1.0, trim=400 280 400 270]{images/output2_ideal.pdf}
+\caption{The number of LUTs ideally needed.}
+\label{fig:ideal1}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=1.0, trim=400 280 400 270]{images/output2_ideal_FF.pdf}
+\caption{The number of flip-flops ideally needed.}
+\label{fig:ideal2}
+\end{figure}
 
 \subsubsection{Practical Results}
 \label{subsubsec:PResults}
 
-In order to actually implement the state machines, additional lookup-tables and flipflops to represent the transition logic are needed. In detail, the amount of these elements is depicted below.
+In order to actually implement the state machines, additional lookup-tables and flipflops to represent the transition logic are needed. In detail, the amount of these elements is depicted in diagram \ref{fig:practical1} and \ref{fig:practical2} below.
 
 \begin{itemize}
 \item[\textbf{Flipflops}]\hfill \\
@@ -172,13 +186,13 @@ Figures \ref{fig:practical1} and \ref{fig:practical2} show the difference of ide
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.6]{images/output2_praktik.pdf}
-\caption{The actualLUT demand, estimated.}
+\includegraphics[scale=0.7, trim=400 120 400 200]{images/output2_praktik.pdf}
+\caption{The actual LUT demand, estimated.}
 \label{fig:practical1}
 \end{figure}
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.8]{images/output2_praktik_FF.pdf}
+\includegraphics[scale=1.0, trim=400 280 400 270]{images/output2_praktik_FF.pdf}
 \caption{The actual flipflop demand, estimated.}
 \label{fig:practical2}
 \end{figure}
@@ -188,16 +202,25 @@ Figures \ref{fig:practical1} and \ref{fig:practical2} show the difference of ide
 \subsubsection{Conclusion}
 \label{subsubsec:Conclusion}
 
-While the numbers of our initial ideal model showed promises .
-While did not have the time to validated we believe that We hope that we can validate our work with BILF within the next weeks but 
+While the results of our initial clustering, under the ideal model, showed great promise the
+While the numbers of our initial ideal model showed promises the practical model seems to creat an unresanbla overahed .
+While did not have the time to validated we believe that  We hope that we can validate our work with BILF within the next weeks but 
+
+BILF problem
 
 
 
 %The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
 Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
 
-\subsubsection{Achievements}
-\label{subsubsec:Achievements}
+Stichpunkte für conclusion:
+- von der Idee her gut, auch umsetzbar
+SA findet annehmbar ergebnisse
+Implementierung als Logik ist sehr komplex (blif/verilog sourcecode benötigt)
+Overhead muss weiter untersucht werden
 
-The presented method is capable of parsing .kiss2 files describing the behaviour of finite state machines, finding clusters of the included states
-according to an optimization towards their mapping to FPGA lookup tables and assigning codes to these found clusters. The results are written back into a .blif file containing the logical description and the codes for each cluster and state. Clusters are determined so that the logic associated with each of them fits into one lookup table. In the scope of this project, some parameter restrictions had to be assumed. The amount of inputs for available LUTs was assumed as 8, which is a possible input count in modern FPGA series. For thenumber of external inputs of the finite state machine, the soft limit of 4 is used. This value has been chosen so that the limitations for one cluster can be ensured; nevertheless, larger input counts may work depending on the amount of significant (i.e. non-don't-care) bits in the input vectors.
+%\subsubsection{Achievements}
+%\label{subsubsec:Achievements}
+
+%The presented method is capable of parsing .kiss2 files describing the behaviour of finite state machines, finding clusters of the included states
+%according to an optimization towards their mapping to FPGA lookup tables and assigning codes to these found clusters. The results are written back into a .blif file containing the logical description and the codes for each cluster and state. Clusters are determined so that the logic associated with each of them fits into one lookup table. In the scope of this project, some parameter restrictions had to be assumed. The amount of inputs for available LUTs was assumed as 8, which is a possible input count in modern FPGA series. For thenumber of external inputs of the finite state machine, the soft limit of 4 is used. This value has been chosen so that the limitations for one cluster can be ensured; nevertheless, larger input counts may work depending on the amount of significant (i.e. non-don't-care) bits in the input vectors.
