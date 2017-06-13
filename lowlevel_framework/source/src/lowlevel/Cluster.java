@@ -27,6 +27,7 @@ public class Cluster{
         this.incomingInterClusterTransitions=new ArrayList<Transition>();
         this.outgoingInterClusterTransitions=new ArrayList<Transition>();
         this.states = new HashSet<State>();
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public Cluster(State aState){
@@ -34,6 +35,7 @@ public class Cluster{
         this.outgoingInterClusterTransitions=new ArrayList<Transition>();
         this.states = new HashSet<State>();
         this.addState(aState);
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public Cluster(Set<State> states){
@@ -43,6 +45,7 @@ public class Cluster{
         for(State state: states){
             this.addState(state);
         }
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public boolean isStateInCluster(State aState){
@@ -462,14 +465,14 @@ public class Cluster{
     }
 
     public Map<Transition, FlipFlop> getOutputTransitionOrigins(){
-        outputTransOrigins = new HashMap<Transition, FlipFlop>();
-                int ii=0;
-        for (Transition trans : this.getOutgoingInterClusterTransitions()){
-            if(this.getOutgoingTransFFs()!=null) {
-                outputTransOrigins.put(trans, this.getOutgoingTransFFs().get(ii));
-            }
-            ii++;
-        }
         return outputTransOrigins;
+    }
+
+    public void addOutputTransitionOriginFF(Transition trans, FlipFlop ff){
+        outputTransOrigins.put(trans, ff);
+    }
+
+    public void setOutputTransOrigins(Map<Transition, FlipFlop> outputTransOrigins) {
+        this.outputTransOrigins = outputTransOrigins;
     }
 }

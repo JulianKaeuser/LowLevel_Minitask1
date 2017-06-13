@@ -19,6 +19,7 @@ public class StateMachine {
         clusters = new HashSet<Cluster>();
         clusterCodes = new HashMap<Cluster, String>();
         stateCodes = new HashMap<State, String>();
+
     }
 
     public StateMachine(ParsedFile fsm){
@@ -179,17 +180,20 @@ public class StateMachine {
             int numOutTrans = cluster.getOutgoingInterClusterTransitions().size();
             FlipFlop[] outTransFFs = new FlipFlop[numOutTrans];
             List<FlipFlop> outgoingTransFFList = new ArrayList<FlipFlop>();
-            for (int ii=0; ii<outTransFFs.length; ii++){
+            int ii=0;
+            for(Transition trans : cluster.getOutgoingInterClusterTransitions()){
                 FlipFlop outTransFF = new FlipFlop();
                 outTransFFs[ii]=outTransFF;
                 outgoingTransFFList.add(outTransFF);
                 outTransFF.cluster=cluster;
                 outTransFF.input="next_outTrans_ff_"+ii+"_cluster_"+id;
                 outTransFF.output="outTrans_ff_"+ii+"_cluster_"+id;
+                cluster.addOutputTransitionOriginFF(trans, outTransFF);
+                ii++;
             }
             cluster.setOutgoingTransFFs(outgoingTransFFList);
             id++;
-        }
+        }//endfor cluster
 
     }
 

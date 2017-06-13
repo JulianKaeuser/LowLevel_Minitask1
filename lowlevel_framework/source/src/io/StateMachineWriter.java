@@ -60,6 +60,7 @@ public class StateMachineWriter {
 
         // all latches in all clusters for transitions
         Map<Cluster, Map<Transition, FlipFlop>> outTransMap = new HashMap<>();
+        Map<Transition, FlipFlop> interClusterTransitionFFs = new HashMap<Transition, FlipFlop>();
         for (Cluster cl : fsm.getClusters()){
             bld.append(".latch "+cl.getIsActiveFlipFlop().input+ " "+cl.getIsActiveFlipFlop().output+ " re clk 0\n");
             if(cl.getStateBitFFs()!=null) {
@@ -88,6 +89,7 @@ public class StateMachineWriter {
                 }
             }
             String inInterTrans = "";
+            /*
             for (Transition trans : cl.getIncomingInterClusterTransitions()){
                 for (Cluster cl2 : fsm.getClusters()) {
                     if (cl2.isStateInCluster(trans.getOrigin())){
@@ -95,6 +97,16 @@ public class StateMachineWriter {
                             inInterTrans+= outTransMap.get(cl2).get(trans).output+" " ;
                         }
 
+                    }
+                }
+            }
+            */
+            for (Transition trans : cl.getIncomingInterClusterTransitions()){
+                for (Cluster cl2 : fsm.getClusters()){
+                    if(cl2.getOutputTransitionOrigins().keySet().contains(trans)){
+                        // transition comes from this cluster
+                        inInterTrans += cl2.getOutputTransitionOrigins().get(trans).output+" ";
+                        inInterTrans += "AAAAA";
                     }
                 }
             }
@@ -174,12 +186,11 @@ public class StateMachineWriter {
         for (Cluster cl : fsm.getClusters()){
             String str = "";
             int stateBits=0;
-            if(cl.getStateBitFFs()!=null) {
-                for (FlipFlop ff : cl.getStateBitFFs()) {
+            for (FlipFlop ff : cl.getStateBitFFs()) {
                     stateBits++;
                     str += " " + ff.output;
-                }
             }
+            // todo da stimmt glaub was nicht
             String inInterTrans = "";
             for (Transition trans : cl.getIncomingInterClusterTransitions()){
                 for (Cluster cl2 : fsm.getClusters()) {
@@ -191,8 +202,9 @@ public class StateMachineWriter {
                 }
             }
             int aa=0;
-            if(cl.getStateBitFFs()!=null) {
-                for (FlipFlop ff : cl.getStateBitFFs()) {
+
+            for (FlipFlop ff : cl.getStateBitFFs()) {
+                    bld.append("\n# stateBit transition for cluster "+ cl.getID()+", bit "+ff.output+"\n");
                     // stateBits+inputs+inComingTrans+isActive=ffInput
                     bld.append(".names " + str + " " + buildInputs(fsm) + " " + inInterTrans + cl.getIsActiveFlipFlop().output + " " + ff.input + "\n");
                     for (State st : cl.getStates()) {
@@ -229,8 +241,8 @@ public class StateMachineWriter {
                             }
                         }
                     }
-                }
             }
+
 
         } //did it for state bit
         System.out.println(" state bits set");
