@@ -44,7 +44,7 @@ public class SimulatedAnnealing {
         setMutator();
 
         List<Cluster> sCurr = mutator.getInitialS(fsm);
-        bestClusteringSolution = sCurr;
+        bestClusteringSolutionStored = storeClustering(sCurr);
         double currentFitness = ff.getFitness(sCurr);
 
         // we have N=numStates elements to alter

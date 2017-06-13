@@ -56,6 +56,7 @@ public class Main {
 					while (retVar == 0) {
 						result = sa.findClustering(fsm, ff, 1);
 						retVar = result.size(); //irgendein Bug den ich nicht verbrochen habe ist hier drin.Bugfix
+						if(retVar==0) System.out.println("result zero size");
 					}
 					if(best_result==null || result.size()<best_result.size()){
 						best_result=result;
@@ -65,7 +66,7 @@ public class Main {
 
 				//if()
 			//	printClusterList(clusterBefore);
-				break;
+				//break;
 			//	saveClusterBenchmark(file_name, result, clusterBefore);
 			}
 		}
