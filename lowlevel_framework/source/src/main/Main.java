@@ -50,7 +50,7 @@ public class Main {
 
 				List<Cluster> best_result=null;
 				// BUGFIX :D
-				for(int i=0;i<100;i++) {
+				for(int i=0;i<10;i++) {
 					int retVar = 0;
 					List<Cluster> result = null;
 					while (retVar == 0) {
@@ -62,7 +62,7 @@ public class Main {
 						best_result=result;
 					}
 				}
-				saveClusterBenchmark(file_name, best_result, clusterBefore);
+				saveClusterBenchmark(file_name, best_result, clusterBefore, fsm.getNumOutputs());
 
 				//if()
 			//	printClusterList(clusterBefore);
@@ -198,26 +198,32 @@ public class Main {
 		//Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
 	}
 
-	public static void saveClusterBenchmark(String algoName, List<Cluster> sorted_clusters, List<Cluster> unsorted_clusters){
+	public static void saveClusterBenchmark(String algoName, List<Cluster> sorted_clusters, List<Cluster> unsorted_clusters, int outputs){
+
+		int ff_sorted=0;
+		for(Cluster c:sorted_clusters){
+			ff_sorted+=(Math.log(c.getNumberOfStates())/Math.log(2))+1; //ld(states) in 1 cluster
+			ff_sorted+=c.getOutgoingInterClusterTransitions().size();
+		}
+
 		String text="";
 		text+=algoName;
 		text+=",";
-	//	System.out.println(algoName); //Algorithm
-		text+=unsorted_clusters.size();
+
+		text+=unsorted_clusters.size();  //LUT All-One-Hot column
 		text+=",";
-	//	System.out.println(unsorted_clusters.size()); //LUT All-One-Hot
-		text+=sorted_clusters.size();
+
+		int lutCluster = sorted_clusters.size()+ff_sorted ; //LUT Cluster
+		text+=lutCluster;
 		text+=",";
-	//	System.out.println(sorted_clusters.size()); //LUT Cluster
-		text+=unsorted_clusters.size()*2;
+
+		int allOneHotFF = unsorted_clusters.size()+outputs;
+		text+=allOneHotFF;					// FF All-One-Hot
 		text+=",";
-	//	System.out.println(unsorted_clusters.size()*2); //FF All-One-Hot
-		int ff_sorted=0;
-		for(Cluster c:sorted_clusters){
-			ff_sorted+=(Math.log(c.getNumberOfStates())/Math.log(2))+1;
-		}
-		text+=unsorted_clusters.size()*2;
-	//	System.out.println(ff_sorted); //FF Cluster
+
+		int clusterFF = ff_sorted+outputs;
+		text+= clusterFF; 					//FF Cluster
+
 
 		try {
 			writeIntoBenchmakrFile(text);
