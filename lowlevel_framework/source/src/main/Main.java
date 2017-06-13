@@ -80,13 +80,14 @@ public class Main {
 			ClusterFitnessFunction ff = new ClusterFitnessFunction(fsm.getNumInputs());
 			List<Cluster> result = sa.findClustering(fsm, ff, 1);
 
-			StateMachine ourFSM = new StateMachine();
-			ourFSM.name = args[0];
+			StateMachine ourFSM = new StateMachine(fsm);
+			ourFSM.name = args[0].replace(".", "_");
 			ourFSM.addClusteredList(result);
 			ourFSM.assignCodes();
 			printCodes(ourFSM);
 
 			printClusterList(result);
+			StateMachineWriter.writeFSM(ourFSM, path);
 
 		}
 		else{

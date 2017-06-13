@@ -7,6 +7,8 @@ import java.util.*;
  */
 public class StateMachine {
 
+    private  int numInputs;
+    private int numOutputs;
     public String name;
 
     private Set<Cluster> clusters;
@@ -23,6 +25,8 @@ public class StateMachine {
         clusterCodes = new HashMap<Cluster, String>();
         stateCodes = new HashMap<State, String>();
         this.clusters= new HashSet<Cluster>();
+        this.numOutputs = fsm.getNumOutputs();
+        this.numInputs = fsm.getNumInputs();
         for(State aState : fsm.getStates()){
             this.addState(aState);
         }
@@ -52,22 +56,16 @@ public class StateMachine {
         }
     }
 
-    //todo
-    public String getEncoding(){
-        return null;
-    }
 
-    public int getNumTransitions(){
-        return 0;
-    }
+
 
     public int getNumStates(){
-        return 0;
+        return stateCodes.keySet().size();
     }
 
-    // todo
+
     public int getNumInputs() {
-        return 0;
+        return numInputs;
     }
 
 
@@ -75,9 +73,9 @@ public class StateMachine {
         return clusters;
     }
 
-    // todo
+
     public int getNumOutputs() {
-        return 0;
+        return numOutputs;
     }
 
     public State getResetState() {
@@ -94,9 +92,7 @@ public class StateMachine {
         return allTranstions;
     }
 
-    public void clearCluster(){
-        this.clusters = new HashSet<Cluster>();
-    }
+
 
     /**
      * Adds the list of configured clusters to this fsm
@@ -113,7 +109,7 @@ public class StateMachine {
      */
     public void assignCodes(){
         long clusterCode = 0x1;
-        clusterCode = clusterCode << clusters.size();
+        clusterCode = clusterCode << clusters.size()-1;
 
         int ii = 0;
         for (Cluster cl : clusters){
@@ -127,7 +123,12 @@ public class StateMachine {
 
 
             for (State state : cl.getStates()){
-                stateCodes.put(state, Integer.toBinaryString(stateCode));
+                String val = Integer.toBinaryString(stateCode);
+                if (val.equals("0")&&cl.getStates().size()<2){
+                    val="";
+                }
+                stateCodes.put(state, val);
+
                 stateCode++;    // binary
             }
             ii++;
@@ -164,23 +165,30 @@ public class StateMachine {
 
             int numStateFFs = (int)Math.ceil(Math.log(cluster.getNumberOfStates())/Math.log(2));
             FlipFlop[] stateFFs = new FlipFlop[numStateFFs];
+            List<FlipFlop> stateFFList = new ArrayList<FlipFlop>();
             for (int ii=0; ii<stateFFs.length; ii++){
                 FlipFlop stateFF = new FlipFlop();
                 stateFFs[ii]=stateFF;
+                stateFFList.add(stateFF);
                 stateFF.cluster=cluster;
                 stateFF.input="next_state_ff_"+ii+"_cluster_"+id;
                 stateFF.output="state_ff_"+ii+"_cluster_"+id;
             }
+            cluster.setStateBitFFs(stateFFList);
 
             int numOutTrans = cluster.getOutgoingInterClusterTransitions().size();
             FlipFlop[] outTransFFs = new FlipFlop[numOutTrans];
+            List<FlipFlop> outgoingTransFFList = new ArrayList<FlipFlop>();
             for (int ii=0; ii<outTransFFs.length; ii++){
                 FlipFlop outTransFF = new FlipFlop();
                 outTransFFs[ii]=outTransFF;
+                outgoingTransFFList.add(outTransFF);
                 outTransFF.cluster=cluster;
                 outTransFF.input="next_outTrans_ff_"+ii+"_cluster_"+id;
                 outTransFF.output="outTrans_ff_"+ii+"_cluster_"+id;
             }
+            cluster.setOutgoingTransFFs(outgoingTransFFList);
+            id++;
         }
 
     }
