@@ -57,6 +57,64 @@ public class SimulatedAnnealing {
 
         double alpha = 1.0;
         while(t > 0.01){                   // experimental amount... in hope that there arent so big fsms
+            //   System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
+            int ii = 0; // number of inner iterations
+            int accepted = 0;
+            while(ii<= nIterations){
+                //    System.out.println("[SA] innerIteration #"+ ii);
+                ii++;
+                List<Cluster> sNew = mutator.mutateClusters(sCurr, numOperations);
+                double newFitness = ff.getFitness(sNew);
+                //    System.out.println("[SA] newFitness = "+newFitness);
+                double deltaFitness = newFitness - currentFitness;
+                if(newFitness==0.0){
+                    continue;
+                }
+                if(deltaFitness>0){
+                    sCurr = sNew;
+                    currentFitness = newFitness;
+                    accepted++;
+                }
+                else if(Math.random()<Math.exp(deltaFitness/t)){
+                    sCurr = sNew;
+                    currentFitness = newFitness;
+                    accepted++;
+                }
+                if (currentFitness>=overallBestFitness){
+                    overallBestFitness = currentFitness;
+                    bestClusteringSolution = sCurr;
+                    bestClusteringSolutionStored = storeClustering(sCurr);
+                }
+                //    System.out.println("[SA] current Fitness = "+ overallBestFitness);
+            }
+            alpha = (double)(accepted/ii);
+            t = updateTemperature(alpha, t);
+        }
+        // finished; set best solution as return value
+
+
+        return restoreClustering(bestClusteringSolutionStored);
+    }
+    /*
+    public List<Cluster> findClustering(ParsedFile fsm, ClusterFitnessFunction ff, int numOperations){
+        List<Cluster> bestClusteringSolution = new ArrayList<Cluster>();
+        Map<Cluster, Set<State>> bestClusteringSolutionStored = storeClustering(bestClusteringSolution);
+        setMutator();
+
+        List<Cluster> sCurr = mutator.getInitialS(fsm);
+        bestClusteringSolution = sCurr;
+        double currentFitness = ff.getFitness(sCurr);
+
+        // we have N=numStates elements to alter
+        double nIterations = Math.pow(innerNumber, (4/3))* fsm.getNum_states();
+
+        double t = getInitialTemperature(fsm, ff, numOperations);
+
+        double overallBestFitness = currentFitness;
+
+
+        double alpha = 1.0;
+        while(t > 0.01){                   // experimental amount... in hope that there arent so big fsms
          //   System.out.println("[SA]       tCurrent = "+ t+" , alpha = "+ alpha);
             int ii = 0; // number of inner iterations
             int accepted = 0;
@@ -94,7 +152,7 @@ public class SimulatedAnnealing {
 
 
         return restoreClustering(bestClusteringSolutionStored);
-    }
+    } */
 
     /**
      * Returns the initial temperature...
@@ -170,7 +228,6 @@ public class SimulatedAnnealing {
      * @return a map
      */
     private Map<Cluster, Set<State>> storeClustering(List<Cluster> list){
-
         Map<Cluster, Set<State>> map = new HashMap<Cluster, Set<State>>();
         for (Cluster cluster : list){
             Set<State> states = new HashSet<State>();
