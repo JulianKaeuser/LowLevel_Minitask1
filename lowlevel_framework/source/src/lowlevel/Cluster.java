@@ -18,10 +18,16 @@ public class Cluster{
 
     private String name;
 
+    private FlipFlop isActiveFlipFlop;
+    private List<FlipFlop> stateBitFFs;
+    private List<FlipFlop> outgoingTransFFs;
+    private Map<Transition, FlipFlop> outputTransOrigins;
+
     public Cluster(){
         this.incomingInterClusterTransitions=new ArrayList<Transition>();
         this.outgoingInterClusterTransitions=new ArrayList<Transition>();
         this.states = new HashSet<State>();
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public Cluster(State aState){
@@ -29,6 +35,7 @@ public class Cluster{
         this.outgoingInterClusterTransitions=new ArrayList<Transition>();
         this.states = new HashSet<State>();
         this.addState(aState);
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public Cluster(Set<State> states){
@@ -38,6 +45,7 @@ public class Cluster{
         for(State state: states){
             this.addState(state);
         }
+        this.outputTransOrigins = new HashMap<Transition, FlipFlop>();
     }
 
     public boolean isStateInCluster(State aState){
@@ -432,4 +440,39 @@ public class Cluster{
     */
 
 
+    public void setIsActiveFF(FlipFlop ff){
+        this.isActiveFlipFlop = ff;
+    }
+
+    public FlipFlop getIsActiveFlipFlop(){
+        return isActiveFlipFlop;
+    }
+
+    public List<FlipFlop> getStateBitFFs() {
+        return stateBitFFs;
+    }
+
+    public void setStateBitFFs(List<FlipFlop> stateBitFFs) {
+        this.stateBitFFs = stateBitFFs;
+    }
+
+    public List<FlipFlop> getOutgoingTransFFs() {
+        return outgoingTransFFs;
+    }
+
+    public void setOutgoingTransFFs(List<FlipFlop> outgoingTransFFs) {
+        this.outgoingTransFFs = outgoingTransFFs;
+    }
+
+    public Map<Transition, FlipFlop> getOutputTransitionOrigins(){
+        return outputTransOrigins;
+    }
+
+    public void addOutputTransitionOriginFF(Transition trans, FlipFlop ff){
+        outputTransOrigins.put(trans, ff);
+    }
+
+    public void setOutputTransOrigins(Map<Transition, FlipFlop> outputTransOrigins) {
+        this.outputTransOrigins = outputTransOrigins;
+    }
 }

@@ -1,3 +1,7 @@
+# intelliJ project stuff
+*.iml
+
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
