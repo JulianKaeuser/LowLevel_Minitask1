@@ -168,9 +168,23 @@ in the bbara.kiss2 benchmark with 10 states, 77 flipflops are necessary in total
 Since the concept of clustering requires any cluster not to exceed $N_{max}$, each flipflops next state can be calculated using one LUT. Therefore, the amount of LUTs is the same as for the flipflops.
 \end{itemize}
 
-Figure XXX shows the difference of ideal and actual hardware demand. Considering these values, a cluster-wise state encoding is not a suitable encoding method. Moreover, it adds unnecessary complexity to the state encoding.
+Figures \ref{fig:practical1} and \ref{fig:practical2} show the difference of ideal and actual hardware demand. Considering these values, a cluster-wise state encoding is not a suitable encoding method. Moreover, it adds unnecessary complexity to the state encoding.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.6]{images/output2_praktik.pdf}
+\caption{The actualLUT demand, estimated.}
+\label{fig:practical1}
+\end{figure}
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.8]{images/output2_praktik_FF.pdf}
+\caption{The actual flipflop demand, estimated.}
+\label{fig:practical2}
+\end{figure}
 
 
+\newpage
 \subsubsection{Conclusion}
 \label{subsubsec:Conclusion}
 
