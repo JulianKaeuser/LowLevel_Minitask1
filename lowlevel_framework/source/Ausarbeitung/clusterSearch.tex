@@ -140,36 +140,46 @@ If multiple mutations are performed on one clustering, there is a probability of
 \label{cha:Evaluation}
 
 This chapter evaluates the quality of the cluster-based state encoding.
+
 \subsubsection{BLIF Format as Output}
 \label{subsubsec:BLIFOutput}
 
-NEU SCHREIBEN WEIL IST NICHT
-Initial we choose BLIF as our format of choice to encode the different state machines. While the encoding process itself is functional the ABC parsers additionaly needs XYZ.
-Due to time constrains we were not able to parse our state machines into the ABC parser. Instead we choose to estimate the number of LUT and FF based on the structure of the FSM.
+Initial we choose BLIF as our format of choice to represent the encoded state machines. While the encoding process itself is functional, the output generation in BLIF could not be realized entirely. Detailed information about each transition must be added to the BLIF description, so that the cluster encoding evolves as a complex process.
+Due to time constraints we were not able to parse the generated encoding into a fully defined BLIF file. For the evaluation, we choose to estimate the number of LUT and fliflops based on the structure of the FSM instead. Since the output logic of an FSM is not dominant, the estimation neglects its resource demand.
 
 \subsubsection{Ideal Results}
 \label{subsubsec:IResults}
 
-The following diagram shows the number of lookup-tables and Flip Flops that is minimal needed to encode the states machines. This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state. This model excludes all additional lookup-tables needed for transition purposes.
+The following diagram shows the minimal required amount of lookup-tables and flipflops that is needed to encode the states machines. This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state.It excludes all additional lookup-tables needed for transition purposes.
+
+%5 sowas ala man kann sehen, dass man unter dieser annahme schnell ein akzeptables encoding findet.
 
 
 \subsubsection{Practical Results}
 \label{subsubsec:PResults}
 
-In order to actually implement the state machines additional lookup-tables to represent the transtion logic are needed. 
-Due to the fact that XYZ we need additional XXX.
-The following
+In order to actually implement the state machines, additional lookup-tables and flipflops to represent the transition logic are needed. In detail, the amount of these elements is depicted below.
+
+\begin{itemize}
+\item[\textbf{Flipflops}]\hfill \\
+For every cluster, the amount of actually necessary flipflops compounds of one for the cluster active state, the logarithmus dualis of the number of included states for the internal binary state encoding and one flipflop per outgoing inter-cluster transition. Depending on the state graph, these can easily exceed the amount of other flipflops in the cluster. For example,
+in the bbara.kiss2 benchmark with 10 states, 77 flipflops are necessary in total.
+\item[\textbf{LUTs}]\hfill \\
+Since the concept of clustering requires any cluster not to exceed $N_{max}$, each flipflops next state can be calculated using one LUT. Therefore, the amount of LUTs is the same as for the flipflops.
+\end{itemize}
+
+Figure XXX shows the difference of ideal and actual hardware demand. Considering these values, a cluster-wise state encoding is not a suitable encoding method. Moreover, it adds unnecessary complexity to the state encoding.
 
 
 \subsubsection{Conclusion}
 \label{subsubsec:Conclusion}
 
 While the numbers of our initial ideal model showed promises .
-While did not had the time to validated we believe that We hope that we can validate our work with BILF within the next weeks but 
+While did not have the time to validated we believe that We hope that we can validate our work with BILF within the next weeks but 
 
 
 
-The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
+%The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
 Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
 
 \subsubsection{Achievements}
