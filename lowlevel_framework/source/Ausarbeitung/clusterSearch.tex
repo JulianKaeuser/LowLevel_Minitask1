@@ -5,7 +5,7 @@
 
 
 
-\section{Cluster Formation}
+\section{Idea of Cluster-wise Encoding}
 \label{sec:clusterSearch}
 
 The goal of this task is to optimize the encoding of state machines within an FPGA.\\
@@ -30,7 +30,7 @@ The following equation describes the input of the LUT and the constraints that e
 \begin{center}
 \begin{eqnarray}
 1\vspace{1cm} \label{m1}+\\
-log_2(n_{statesInCluster}) \label{m2} \\
+log_2(n_{statesInCluster}) \label{m2}+ \\
 n_{ExternalInputsThatCare} \label{m3}+ \\
 n_{incomingInterClusterTransitions} \label{m4}+ \\
 = N \label{m5}\\
@@ -82,7 +82,6 @@ This finding leads to a second approach. The second algorithm attempts to create
 These predecessors are now ordered by the number of different ingoing transitions they have. After the ordering the algorithm tries to merge the clusters. In case that merging violates the constrains the state with the lowest order is thrown away. \\
 Due to the fact that this algorithm strongly depends on states that have a lot of corresponding states, this algorithm tends to work bad on the most benchmarks. Therefore, it became clear that an algorithm that works without observation or model based approaches is necessary. \\
 
-
 For the final approach we apply the simulated annealing technique introduced during the lecture. This algorithm is chosen because of its well-known, problem-independent effectiveness. The task hence reduces to finding a suitable fitness function and mutation scheme.\\
 Due to the timed scope of this project no further fine-tuning of the parameters, like starting and end temperature, could be included. \\
 Both fitness function and the mutation scheme are described in the next chapter.\\
@@ -95,29 +94,38 @@ Both fitness function and the mutation scheme are described in the next chapter.
 \subsubsection{Simulated Annealing Algorithm}
 \label{subsubsec:SAAlgorithm}
 
-We use the simulated annealing algorithm introduce in the lecture. Due to time constrains we have not optimized the algorithm. Our inital startin temperature is 20 times the standard deviation of all 
+We use the simulated annealing algorithm introduced in the lecture. Due to the timed scope of the project we have not optimized the algorithm in terms of its parameters. In the following, the utilized values are presented.
 
-Instead we 
-20*standard deviation of #numStates random changes fitness difference
+\begin{itemize}
+\item[\textbf{Starting temperature}]\hfill \\
+As starting temperature, the standard deviation of N random solutions' fitness difference, multiplied with 20, has been assumed, where N equals the number of states to encode.
+\item[\textbf{End temperature}]\hfill \\
+Since there was no experience regarding the runtime of the algorithm for the clustering problem on the benchmarks' state graphs, we started with an end temperature of 0.01. This value worked well and has therefore not been altered.
+\item[\textbf{Inner number}]\hfill \\
+For the sake of short runtime, the inner number has been chosen as 1.0.
+\item[\textbf{Temperature update}]\hfill \\
+After each outer loop iteration, the temperature is updated according to the current acceptance rate. The multiplicator $\gamma$ as function oftheacceptance rate $\alpha$ is shown below.
 
-We use a staring termperature of 20*sqrt(var)
-20*sqrt(var)
+\begin{tabbing}
+\hspace{4cm}\=\hspace{4cm}\=\hspace{4cm}\=\kill
+ \alpha>=0.96  \>\0.96>=\alpha>0.8 \>0.8>=\alpha>0.15  \> 0.15>=\alpha \\ 
+ \gamma=0.5 \>  \gamma=0.9 \>  \gamma=0.95 \> \gamma=0.8
+\end{tabbing} 
+\end{itemize}
 
-AHHHH MACH DU MAL WEITER
 
-% something about the parameters used
-%startingTemperature: 20*s shittyfuck
-% innerNumber = 1.0
-% TemperatureVariation = table(alpha)
-% N = number of states
+With the parameter values shown above, the runtime is in the range of seconds. This behaviour originates in the small problem size compared to typical problems where Simulated Annealing is applied. Considering this, there was no need to otimize the parameter set towards a better runtime.
 
 
 \subsubsection{Fitness Function}
 \label{subsubsec:FitnessFunction}
 
 We try to minimize the number of binary encoded clusters. Therefore the fitness function is declared as the difference between the number of states and the number of current clusters. In mathematical terms: 
-$ fitness\_function = \sum{states} - \sum{clusters} $\\
-It is necessary that we do not break the equation  $N\_max$ (\ref{m6}) for each cluster. Therefore, the fitness function is 0 if $ N $ (\ref{m5}) is greater $N\_max$.
+\begin{equation}
+\text{fitness(solution)} = \sum{\text{states}} - \sum{\text{clusters}}
+\end{equation}
+
+It is necessary that we do not break the equation  $N\_max$ (\ref{m6}) for each cluster. Therefore, the fitness of a solution is 0 if $ N $ (\ref{m5}) is greater $N\_max$.
 
 \subsubsection{Mutation}
 \label{subsubsec:Mutation}
