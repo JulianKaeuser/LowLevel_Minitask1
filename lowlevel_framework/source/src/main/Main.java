@@ -5,9 +5,7 @@ import io.Parser;
 import io.StateMachineWriter;
 import lowlevel.*;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -186,11 +184,17 @@ public class Main {
 		String userDir = System.getProperty("user.dir");
 		String path = userDir+relPath;
 
-		Path target = Paths.get(path+"output.csv");
+		String filePath = path+"output.csv";
 
-		Path file = Files.createFile(target); //BUUUUUUGGGGG BUG
 
-		Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
+		FileWriter writer = new FileWriter(filePath, true);
+		writer.write(text+"\n");
+		writer.flush();
+		writer.close();
+
+
+
+		//Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
 	}
 
 	public static void saveClusterBenchmark(String algoName, List<Cluster> sorted_clusters, List<Cluster> unsorted_clusters){
