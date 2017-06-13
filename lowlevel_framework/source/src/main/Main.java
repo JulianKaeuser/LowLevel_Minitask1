@@ -62,7 +62,7 @@ public class Main {
 						best_result=result;
 					}
 				}
-				saveClusterBenchmarkBasic(file_name, best_result, clusterBefore, fsm.getNumOutputs());
+				saveClusterBenchmark(file_name, best_result, clusterBefore, fsm.getNumOutputs());
 
 				//if()
 			//	printClusterList(clusterBefore);
