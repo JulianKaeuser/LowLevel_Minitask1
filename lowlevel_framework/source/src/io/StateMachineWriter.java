@@ -69,8 +69,11 @@ public class StateMachineWriter {
                 }
             }
             if(cl.getOutgoingTransFFs()!=null) {
+                int nn=0;
                 for (FlipFlop ff : cl.getOutgoingTransFFs()) {
+                    interClusterTransitionFFs.put(cl.getOutgoingInterClusterTransitionsAsList().get(nn), ff);
                     bld.append(".latch " + ff.input + " " + ff.output + " re clk 0\n");
+                    nn++;
                 }
             }
             outTransMap.put(cl, cl.getOutputTransitionOrigins());
@@ -88,28 +91,8 @@ public class StateMachineWriter {
                     str += " " + ff.output;
                 }
             }
-            String inInterTrans = "";
-            /*
-            for (Transition trans : cl.getIncomingInterClusterTransitions()){
-                for (Cluster cl2 : fsm.getClusters()) {
-                    if (cl2.isStateInCluster(trans.getOrigin())){
-                        if(outTransMap.get(cl2)!=null && outTransMap.get(cl2).get(trans)!=null){
-                            inInterTrans+= outTransMap.get(cl2).get(trans).output+" " ;
-                        }
-
-                    }
-                }
-            }
-            */
-            for (Transition trans : cl.getIncomingInterClusterTransitions()){
-                for (Cluster cl2 : fsm.getClusters()){
-                    if(cl2.getOutputTransitionOrigins().keySet().contains(trans)){
-                        // transition comes from this cluster
-                        inInterTrans += cl2.getOutputTransitionOrigins().get(trans).output+" ";
-                        inInterTrans += "AAAAA";
-                    }
-                }
-            }
+            String inInterTrans = getAllInterClusterInputFFs(cl, fsm, interClusterTransitionFFs);
+            //inInterTrans = getAllInterClusterInputFFs( cl, fsm, i);
             // stateBits+inputs+inInterTrans+isActiveSelf+output
             bld.append("#defines active bit of cluster "+cl.getID()+"\n");
             bld.append(".names"+str+" "+buildInputs(fsm)+" "+inInterTrans+cl.getIsActiveFlipFlop().output+" "+cl.getIsActiveFlipFlop().input+"\n");
@@ -341,5 +324,11 @@ public class StateMachineWriter {
 
 
 
-
+    private static String getAllInterClusterInputFFs(Cluster cl, StateMachine fsm, Map<Transition, FlipFlop> map){
+        String str = "";
+        for (Transition trans : cl.getIncomingInterClusterTransitionsAsList()){
+            str += " "+map.get(trans).output;
+        }
+        return str;
+    }
 }
