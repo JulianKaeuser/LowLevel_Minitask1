@@ -200,12 +200,16 @@ public class Main {
 	public static void saveClusterBenchmark(String algoName, List<Cluster> sorted_clusters, List<Cluster> unsorted_clusters){
 		String text="";
 		text+=algoName;
+		text+=",";
 	//	System.out.println(algoName); //Algorithm
 		text+=unsorted_clusters.size();
+		text+=",";
 	//	System.out.println(unsorted_clusters.size()); //LUT All-One-Hot
 		text+=sorted_clusters.size();
+		text+=",";
 	//	System.out.println(sorted_clusters.size()); //LUT Cluster
 		text+=unsorted_clusters.size()*2;
+		text+=",";
 	//	System.out.println(unsorted_clusters.size()*2); //FF All-One-Hot
 		int ff_sorted=0;
 		for(Cluster c:sorted_clusters){
