@@ -5,7 +5,7 @@
 
 
 
-\section{Cluster Formation}
+\section{Idea of Cluster-wise Encoding}
 \label{sec:clusterSearch}
 
 The goal of this task is to optimize the encoding of state machines within an FPGA.\\
@@ -30,7 +30,7 @@ The following equation describes the input of the LUT and the constraints that e
 \begin{center}
 \begin{eqnarray}
 1\vspace{1cm} \label{m1}+\\
-log_2(n_{statesInCluster}) \label{m2} \\
+log_2(n_{statesInCluster}) \label{m2}+ \\
 n_{ExternalInputsThatCare} \label{m3}+ \\
 n_{incomingInterClusterTransitions} \label{m4}+ \\
 = N \label{m5}\\
@@ -82,7 +82,6 @@ This finding leads to a second approach. The second algorithm attempts to create
 These predecessors are now ordered by the number of different ingoing transitions they have. After the ordering the algorithm tries to merge the clusters. In case that merging violates the constrains the state with the lowest order is thrown away. \\
 Due to the fact that this algorithm strongly depends on states that have a lot of corresponding states, this algorithm tends to work bad on the most benchmarks. Therefore, it became clear that an algorithm that works without observation or model based approaches is necessary. \\
 
-
 For the final approach we apply the simulated annealing technique introduced during the lecture. This algorithm is chosen because of its well-known, problem-independent effectiveness. The task hence reduces to finding a suitable fitness function and mutation scheme.\\
 Due to the timed scope of this project no further fine-tuning of the parameters, like starting and end temperature, could be included. \\
 Both fitness function and the mutation scheme are described in the next chapter.\\
@@ -95,29 +94,38 @@ Both fitness function and the mutation scheme are described in the next chapter.
 \subsubsection{Simulated Annealing Algorithm}
 \label{subsubsec:SAAlgorithm}
 
-We use the simulated annealing algorithm introduce in the lecture. Due to time constrains we have not optimized the algorithm. Our inital startin temperature is 20 times the standard deviation of all 
+We use the simulated annealing algorithm introduced in the lecture. Due to the timed scope of the project we have not optimized the algorithm in terms of its parameters. In the following, the utilized values are presented.
 
-Instead we 
-20*standard deviation of #numStates random changes fitness difference
+\begin{itemize}
+\item[\textbf{Starting temperature}]\hfill \\
+As starting temperature, the standard deviation of N random solutions' fitness difference, multiplied with 20, has been assumed, where N equals the number of states to encode.
+\item[\textbf{End temperature}]\hfill \\
+Since there was no experience regarding the runtime of the algorithm for the clustering problem on the benchmarks' state graphs, we started with an end temperature of 0.01. This value worked well and has therefore not been altered.
+\item[\textbf{Inner number}]\hfill \\
+For the sake of short runtime, the inner number has been chosen as 1.0.
+\item[\textbf{Temperature update}]\hfill \\
+After each outer loop iteration, the temperature is updated according to the current acceptance rate. The multiplicator $\gamma$ as function oftheacceptance rate $\alpha$ is shown below.
 
-We use a staring termperature of 20*sqrt(var)
-20*sqrt(var)
+\begin{tabbing}
+\hspace{4cm}\=\hspace{4cm}\=\hspace{4cm}\=\kill
+ \alpha>=0.96  \>\0.96>=\alpha>0.8 \>0.8>=\alpha>0.15  \> 0.15>=\alpha \\ 
+ \gamma=0.5 \>  \gamma=0.9 \>  \gamma=0.95 \> \gamma=0.8
+\end{tabbing} 
+\end{itemize}
 
-AHHHH MACH DU MAL WEITER
 
-% something about the parameters used
-%startingTemperature: 20*s shittyfuck
-% innerNumber = 1.0
-% TemperatureVariation = table(alpha)
-% N = number of states
+With the parameter values shown above, the runtime is in the range of seconds. This behaviour originates in the small problem size compared to typical problems where Simulated Annealing is applied. Considering this, there was no need to otimize the parameter set towards a better runtime.
 
 
 \subsubsection{Fitness Function}
 \label{subsubsec:FitnessFunction}
 
 We try to minimize the number of binary encoded clusters. Therefore the fitness function is declared as the difference between the number of states and the number of current clusters. In mathematical terms: 
-$ fitness\_function = \sum{states} - \sum{clusters} $\\
-It is necessary that we do not break the equation  $N\_max$ (\ref{m6}) for each cluster. Therefore, the fitness function is 0 if $ N $ (\ref{m5}) is greater $N\_max$.
+\begin{equation}
+\text{fitness(solution)} = \sum{\text{states}} - \sum{\text{clusters}}
+\end{equation}
+
+It is necessary that we do not break the equation  $N\_max$ (\ref{m6}) for each cluster. Therefore, the fitness of a solution is 0 if $ N $ (\ref{m5}) is greater $N\_max$.
 
 \subsubsection{Mutation}
 \label{subsubsec:Mutation}
@@ -131,12 +139,47 @@ If multiple mutations are performed on one clustering, there is a probability of
 \chapter{Evaluation}
 \label{cha:Evaluation}
 
-In this chapter, a look on the output files and the quality of the cluster-wise state encoding is taken.
+This chapter evaluates the quality of the cluster-based state encoding.
 
 \subsubsection{BLIF Format as Output}
 \label{subsubsec:BLIFOutput}
 
-The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
+Initial we choose BLIF as our format of choice to represent the encoded state machines. While the encoding process itself is functional, the output generation in BLIF could not be realized entirely. Detailed information about each transition must be added to the BLIF description, so that the cluster encoding evolves as a complex process.
+Due to time constraints we were not able to parse the generated encoding into a fully defined BLIF file. For the evaluation, we choose to estimate the number of LUT and fliflops based on the structure of the FSM instead. Since the output logic of an FSM is not dominant, the estimation neglects its resource demand.
+
+\subsubsection{Ideal Results}
+\label{subsubsec:IResults}
+
+The following diagram shows the minimal required amount of lookup-tables and flipflops that is needed to encode the states machines. This number is based on the ideal model that one lookup-table is needed for one binary cluster or one one-hot encoded state.It excludes all additional lookup-tables needed for transition purposes.
+
+%5 sowas ala man kann sehen, dass man unter dieser annahme schnell ein akzeptables encoding findet.
+
+
+\subsubsection{Practical Results}
+\label{subsubsec:PResults}
+
+In order to actually implement the state machines, additional lookup-tables and flipflops to represent the transition logic are needed. In detail, the amount of these elements is depicted below.
+
+\begin{itemize}
+\item[\textbf{Flipflops}]\hfill \\
+For every cluster, the amount of actually necessary flipflops compounds of one for the cluster active state, the logarithmus dualis of the number of included states for the internal binary state encoding and one flipflop per outgoing inter-cluster transition. Depending on the state graph, these can easily exceed the amount of other flipflops in the cluster. For example,
+in the bbara.kiss2 benchmark with 10 states, 77 flipflops are necessary in total.
+\item[\textbf{LUTs}]\hfill \\
+Since the concept of clustering requires any cluster not to exceed $N_{max}$, each flipflops next state can be calculated using one LUT. Therefore, the amount of LUTs is the same as for the flipflops.
+\end{itemize}
+
+Figure XXX shows the difference of ideal and actual hardware demand. Considering these values, a cluster-wise state encoding is not a suitable encoding method. Moreover, it adds unnecessary complexity to the state encoding.
+
+
+\subsubsection{Conclusion}
+\label{subsubsec:Conclusion}
+
+While the numbers of our initial ideal model showed promises .
+While did not have the time to validated we believe that We hope that we can validate our work with BILF within the next weeks but 
+
+
+
+%The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
 Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
 
 \subsubsection{Achievements}
@@ -144,50 +187,3 @@ Additionally, the input files describing state machines in the scope of this pro
 
 The presented method is capable of parsing .kiss2 files describing the behaviour of finite state machines, finding clusters of the included states
 according to an optimization towards their mapping to FPGA lookup tables and assigning codes to these found clusters. The results are written back into a .blif file containing the logical description and the codes for each cluster and state. Clusters are determined so that the logic associated with each of them fits into one lookup table. In the scope of this project, some parameter restrictions had to be assumed. The amount of inputs for available LUTs was assumed as 8, which is a possible input count in modern FPGA series. For thenumber of external inputs of the finite state machine, the soft limit of 4 is used. This value has been chosen so that the limitations for one cluster can be ensured; nevertheless, larger input counts may work depending on the amount of significant (i.e. non-don't-care) bits in the input vectors.
-
-\subsubsection{Results}
-\label{subsubsec:Results}
-
-The resulting logic circuits implementing the assigned codes have been fed into the ABC logic synthesis tool. As parameters, an 8-input LUT .lib description and \texttt{fpga -v; print\_stats} have been used.
-
-%% some results here
-
-
-
-%\section{Formating of the Clusters}
-%\label{subsubsec:format_clusters}
-
-%The goal of our task is to optimize the representation of state machines within an FPGA.
-%%To do so we try to sort as many states as possible into clusters. Each cluster represented an binary state machines that can be implemented in just one look-up-table of an FPGA.
-%Mathematically speaking we try to minimize the number of clusters that can fulfill the following equation:
-
-% %$ N<N_(max) wobei N = \#Incoming\_Cluster\_Inputs + ld(\#Zustände) + \#input\_Bits\_That\_Care  $
-
-%Where $ \#Incoming\_Cluster\_Inputs $ specifies the number of
-%Any cluster that can not fulfill this equation or constrains only one state hast to be one-hot encoded.
-
-
-
-%Due to the nature of the . Since
-%Since the nature was unkown an simulate with multiple itteration
-
-%\subsection{Simulated Annealing}
-%\label{subsubsec:format_clusters}
-
-
-%\subsection{Mutation Algorithm}
-%\label{subsubsec:format_clusters}
-
-%In oder to find a good solution we have to mutate
-%The mutation algorithm mutates the cluster-set a variable number of times.
-%%%During each mutation an random state is extracted from its cluster and assigned to an random other cluster. Clusters how reach zero states are deleted. \\
-%In order to bypass the problem with the local minima it is likely that the same cluster is assigned multiple states.\\
-%If multiple mutation are made there is a probability of 25\,\% that the same cluster is chosen again. Each time the cluster is chosen again this probability is lowered by 5\,\%.
-
-
-
-
-FÜR STATECHARTPDF:
-
-
-
