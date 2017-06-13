@@ -39,8 +39,8 @@ n_{incomingInterClusterTransitions} \label{m4}+ \\
 \end{center}
 
 Equation (\ref{m1}) describes the bit that is necessary to check if the cluster itself is active.\\
-The states inside the cluster are encoded binarily, therefore $ld(\text{number of states})$ bits are needed to represent the states (\ref{m2}). \\
-It is alse necessary to consider the inputs of the transistions. Only input bits that are not always in the "don't care" state must be considered. Therefore equation (\ref{m3}) describes the number of bits that are minimally necessary to describe an input. \\
+The states inside the cluster are encoded binariely, therefore $ld(\text{number of states})$ bits are needed to represent the states (\ref{m2}). \\
+It is also necessary to consider the inputs of the transitions. Only input bits that are not always in the "don't care" state must be considered. Therefore equation (\ref{m3}) describes the number of bits that are minimally necessary to describe an input. \\
 Incoming transitions from other clusters also have to be taken into account. Equation (\ref{m4}) describes them with one bit for each transition. \\
 
 It is necessary to always satisfy all these conditions. Therefore, the value $N_{LUT\_inputs}$ or $N\_max$ (\ref{m6}) represents the number of inputs the LUT has, while the value $N$ (\ref{m5}) represents the number of inputs that are already used.
@@ -144,8 +144,9 @@ This chapter evaluates the quality of the cluster-based state encoding.
 \subsubsection{BLIF Format as Output}
 \label{subsubsec:BLIFOutput}
 
-Initial we choose BLIF as our format of choice to represent the encoded state machines. While the encoding process itself is functional, the output generation in BLIF could not be realized entirely. Detailed information about each transition must be added to the BLIF description, so that the cluster encoding evolves as a complex process.
-Due to time constraints we were not able to parse the generated encoding into a fully defined BLIF file. For the evaluation, we choose to estimate the number of LUT and fliflops based on the structure of the FSM instead. Since the output logic of an FSM is not dominant, the estimation neglects its resource demand.
+Initial we choose BLIF as our format of choice to represent the encoded state machines. While the encoding process itself is functional, the output generation in BLIF could not be realized entirely. Detailed information about each transition must be added to the BLIF description, so that the cluster encoding evolves as a complex process. \\
+Additionally, the input files describing state machines in the scope of this project are .kiss files which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behavior has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice. \\
+Due to time constraints we were not able to parse the generated encoding into a fully defined BLIF file. For the evaluation, we choose to estimate the number of LUT and flip-flops based on the structure of the FSM instead. Since the output logic of an FSM is not dominant, the estimation neglects its resource demand.
 
 \subsubsection{Ideal Results}
 \label{subsubsec:IResults}
@@ -202,22 +203,15 @@ Figures \ref{fig:practical1} and \ref{fig:practical2} show the difference of ide
 \subsubsection{Conclusion}
 \label{subsubsec:Conclusion}
 
-While the results of our initial clustering, under the ideal model, showed great promise the
-While the numbers of our initial ideal model showed promises the practical model seems to creat an unresanbla overahed .
-While did not have the time to validated we believe that  We hope that we can validate our work with BILF within the next weeks but 
+While the results of our initial clustering, under the ideal model, showed great promise the overhead introduced with the practical implementation seems to outweigh this gain. \\
+While the simulated annealing algorithm seems to be an excellent method to cluster the state machines under the N-equation the BILF/ABC validation has proven to be more complex then appicpated. While we were able to create the state encoding it is apparently necessary to create an state encoding without the use of DC values. This circumstance prevented us from future evaluation our results. However we currently anticipate that the overhead needed to implement the transition logic for the binary state machines is far greater than originally assumed.\\
+We concluded that it is necessary to future investigate into this matter and hope that our algorithm can provide the necessary clustering for that.
 
-BILF problem
 
 
 
 %The BLIF format for finite state machines as described in \cite{blif} has some advantages which qualify it over a HDL representation as output format. Among these are the the good parseability, which is especially useful in small projects, and its independence of a specific platform.
-Additionally, the input files describing state machines in the scope of this project are .kiss filesm which are a subspecification of the BLIF format. Therefore, only the circuit mapping has to be written to the output file, and no conversion from BLIF to a HDL description of the functional behaviour has to be pursued. The .kiss format does not allow a more detailed circuit description than the mapping of latches. This must be done in a detailed .blif file. In our case, this disadvantage could be neglected, so that BLIF was the output format of choice.
 
-Stichpunkte für conclusion:
-- von der Idee her gut, auch umsetzbar
-SA findet annehmbar ergebnisse
-Implementierung als Logik ist sehr komplex (blif/verilog sourcecode benötigt)
-Overhead muss weiter untersucht werden
 
 %\subsubsection{Achievements}
 %\label{subsubsec:Achievements}
